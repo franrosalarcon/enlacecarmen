@@ -1,5 +1,5 @@
 /* Estudio de Carmen · funciona sin conexión. La página intenta la red primero (para tener siempre la última versión) y, si no hay, usa la copia guardada. */
-const CACHE = 'estudio-carmen-2555e9fa73';
+const CACHE = 'estudio-carmen-11a865ec0c';
 const FILES = ["index.html", "manifest.webmanifest", "apple-touch-icon.png", "favicon-32.png", "fonts/manrope-latin-wght-normal.woff2", "fonts/playfair-display-latin-400-italic.woff2", "fonts/playfair-display-latin-400-normal.woff2", "fonts/playfair-display-latin-500-normal.woff2", "fonts/playfair-display-latin-600-normal.woff2", "icon-192.png", "icon-512.png", "icon-maskable-512.png", "vendor/LICENCIAS.txt", "vendor/fflate.min.js", "vendor/jsQR.min.js", "vendor/jspdf.plugin.autotable.min.js", "vendor/jspdf.umd.min.js", "vendor/jszip.min.js", "vendor/qrcode.min.js"];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES.map(f => './' + f)).catch(() => {})).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k.startsWith('estudio-carmen-') && k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
