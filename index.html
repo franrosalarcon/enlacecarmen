@@ -47,7 +47,6 @@
   --cat-uni:#0072f5; --cat-uni-bg:#d9edff;
   --cat-examen:#cf2259; --cat-examen-bg:#f8d5e0;
   --cat-entrega:#5b3fd6; --cat-entrega-bg:#e2dff7;
-  --cat-practicas:#c2410c; --cat-practicas-bg:#fde3d3;
   --cat-autoescuela:#237210; --cat-autoescuela-bg:#d3f0cd;
   --cat-personal:#0f8a94; --cat-personal-bg:#d6f3f5;
   --accent:var(--blue); --accent-ink:var(--blue-ink); --accent-50:var(--blue-50); --accent-100:var(--blue-100);
@@ -72,7 +71,6 @@
     --cat-uni:#4da3ff; --cat-uni-bg:#0b3a6e;
     --cat-examen:#ef6f98; --cat-examen-bg:#561129;
     --cat-entrega:#a094ff; --cat-entrega-bg:#2a1f63;
-    --cat-practicas:#ff9a5c; --cat-practicas-bg:#4a1f08;
     --cat-autoescuela:#7fd36a; --cat-autoescuela-bg:#163d17;
     --cat-personal:#5fd0da; --cat-personal-bg:#0b3e46;
     color-scheme:dark;
@@ -96,7 +94,6 @@
   --cat-uni:#4da3ff; --cat-uni-bg:#0b3a6e;
   --cat-examen:#ef6f98; --cat-examen-bg:#561129;
   --cat-entrega:#a094ff; --cat-entrega-bg:#2a1f63;
-  --cat-practicas:#ff9a5c; --cat-practicas-bg:#4a1f08;
   --cat-autoescuela:#7fd36a; --cat-autoescuela-bg:#163d17;
   --cat-personal:#5fd0da; --cat-personal-bg:#0b3e46;
   color-scheme:dark;
@@ -565,77 +562,6 @@ table.tbl td.r,table.tbl th.r{text-align:right;font-variant-numeric:tabular-nums
 .scan i{position:absolute;inset:15%;border:3px solid rgba(255,255,255,.92);border-radius:18px;box-shadow:0 0 0 100vmax rgba(0,0,0,.35);pointer-events:none}
 img[data-ref^="l:"]:not([src]){min-height:90px;min-width:90px;background:var(--surface-3)}
 
-/* ---------- prácticas sociales ---------- */
-.pmonth{display:grid;grid-template-columns:repeat(7,minmax(0,1fr)) 72px;border:1px solid var(--line);border-radius:var(--r-l);overflow:hidden;background:var(--line);gap:1px}
-.pmonth .dow{background:var(--surface-3);font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-2);padding:6px 8px}
-.pmonth .dow.wk{text-align:center;padding-inline:2px}
-.pmonth .mday{min-height:98px}
-.pday.drop{outline:2px dashed var(--cat-practicas);outline-offset:-3px}
-.pchip{display:flex;gap:4px;align-items:center;font-size:11px;line-height:1.25;border-radius:4px;padding:2px 5px;min-width:0;cursor:pointer;border:1px solid transparent;border-left:3px solid var(--pc);background:color-mix(in srgb,var(--pc) 17%,var(--surface));color:var(--ink);touch-action:manipulation;-webkit-user-select:none;user-select:none}
-.pchip .t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
-.pchip .h{font-weight:700;font-variant-numeric:tabular-nums;flex:none}
-.pchip .ck{color:var(--ok);font-weight:800;flex:none}
-.pchip.programada{background:var(--surface);border:1px dashed color-mix(in srgb,var(--pc) 70%,transparent);border-left:3px solid var(--pc)}
-.pchip.falte{background:var(--err-50);border-left-color:var(--err);color:var(--ink-2)}
-.pchip.falte .t,.pchip.cancelada .t{text-decoration:line-through}
-.pchip.cancelada{background:var(--surface-3);border-left-color:var(--line-2);color:var(--ink-3)}
-.pchip.dragging{opacity:.4}
-.pchip:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-.pwk{background:var(--surface-3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px 2px;font-variant-numeric:tabular-nums;text-align:center;min-width:0}
-.pwk b{font-family:var(--f-display);font-weight:400;font-size:22px;line-height:1}
-.pwk span{font-size:10.5px;color:var(--ink-2);font-weight:700}
-.pwk.ok{background:color-mix(in srgb,var(--ok) 12%,var(--surface))}
-.pwk.ok b,.pwk.ok span{color:var(--ok)}
-.pwk.low b{color:var(--warn)}
-.pwk.none b{color:var(--ink-3)}
-.pwk .pl{color:var(--blue-ink);font-weight:600}
-.plegend i{display:inline-block;width:16px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
-.plegend .lg-h{background:var(--cat-practicas-bg);border-left:3px solid var(--cat-practicas)}
-.plegend .lg-p{border:1px dashed var(--cat-practicas);border-left:3px solid var(--cat-practicas)}
-.plegend .lg-f{background:var(--err-50);border-left:3px solid var(--err)}
-.plegend .lg-ok{background:color-mix(in srgb,var(--ok) 25%,var(--surface))}
-.prow{width:100%;text-align:left;background:none;border-left:0;border-right:0;border-bottom:0;font:inherit;color:inherit;align-items:center}
-.prow .grow{display:flex;flex-direction:column;gap:3px}
-.prow .m{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--ink-2)}
-.prow .ex{font-size:12.5px;color:var(--ink-2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.prow .ex.q{font-style:italic;color:var(--ink)}
-.pdate{flex:none;width:54px;border-radius:var(--r-m);border:1px solid var(--line);border-top:3px solid var(--pc,var(--cat-practicas));background:var(--surface-3);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:5px 2px;align-self:flex-start}
-.pdate b{font-family:var(--f-display);font-weight:400;font-size:24px;line-height:1.05}
-.pdate span{font-size:10px;color:var(--ink-2);text-transform:uppercase;letter-spacing:.3px;font-weight:700;white-space:nowrap}
-.pdate.programada{background:var(--surface);border-style:dashed;border-top-style:solid}
-.pdate.falte,.pdate.cancelada{opacity:.6}
-.pstars{color:var(--amber);letter-spacing:1px}
-.pdl{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:6px 14px;margin:0;font-size:13px}
-.pdl dt{color:var(--ink-2);font-weight:600}
-.pdl dd{margin:0;min-width:0;overflow-wrap:anywhere}
-.pent{border-top:4px solid var(--pc)}
-.pdot{width:12px;height:12px;border-radius:50%;background:var(--pc);flex:none}
-.fsec{margin:4px 0 -6px;font:800 11.5px var(--f-ui);letter-spacing:.7px;text-transform:uppercase;color:var(--ink-2);border-top:1px solid var(--line);padding-top:12px}
-.fgrid > .field:first-child .fsec{border-top:0;padding-top:0}
-.prinfo{margin:0;font-size:12.5px;color:var(--ink-2)}
-.prinfo .w{color:var(--warn);font-weight:600}
-.kpi b small{font-family:var(--f-ui);font-size:13px;color:var(--ink-2);font-weight:600}
-.chart rect.ok{fill:var(--ok)}
-.chart rect.low{fill:var(--amber)}
-.chart rect.zero{fill:var(--line-2)}
-.chart rect.now{opacity:.6}
-@media (max-width:520px){
-  .pmonth{grid-template-columns:repeat(7,minmax(0,1fr)) 38px}
-  .pmonth .dow{padding:4px 1px;text-align:center;font-size:10px}
-  .pmonth .mday{min-height:62px;padding:2px}
-  .pwk b{font-size:15px}
-  .pwk span{font-size:9.5px}
-  .pchip{padding:1px 2px;font-size:10px;border-left-width:2px;justify-content:center}
-  .pchip .ck{display:none}
-  .pdate{width:48px}
-  .pdl{grid-template-columns:minmax(0,1fr)}
-  .pdl dt{margin-top:4px}
-}
-
-.item.pend{flex-wrap:wrap;align-items:center}
-.item.pend .grow{flex:1 1 150px}
-.item.pend .pbtns{margin-left:auto}
-
 </style>
 </head>
 <body>
@@ -776,14 +702,13 @@ const IC = {
   columns:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M15 4v16"/>',
   phone:'<rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18.5h2"/>',
   shield:'<path d="M12 3 4.5 6v6c0 4.5 3.2 7.7 7.5 9 4.3-1.3 7.5-4.5 7.5-9V6z"/>',
-  people:'<circle cx="9" cy="8" r="3.2"/><path d="M3 20a6 6 0 0 1 12 0"/><circle cx="17" cy="9.5" r="2.6"/><path d="M15.6 14.4A5 5 0 0 1 21.5 19.5"/>',
   refresh:'<path d="M20 11a8 8 0 0 0-14.3-4.6L4 8.5"/><path d="M4 4v4.5h4.5"/><path d="M4 13a8 8 0 0 0 14.3 4.6l1.7-2.1"/><path d="M20 20v-4.5h-4.5"/>',
 };
 const ic = (n, cls = '') => '<svg class="i ' + cls + '" viewBox="0 0 24 24" aria-hidden="true">' + (IC[n] || '') + '</svg>';
 
 /* ---------- datos estáticos derivados ---------- */
 const MY = { 1: ['3721','3720','3722','3723','3724','37112'], 2: ['3727','3729','3726','3725','3728','37113'] };
-const CATS = [['uni','Clases','Universidad'],['examen','Exámenes','Examen'],['entrega','Entregas','Entrega'],['practicas','Prácticas','Prácticas sociales'],['autoescuela','Autoescuela','Autoescuela'],['personal','Personal','Personal']];
+const CATS = [['uni','Clases','Universidad'],['examen','Exámenes','Examen'],['entrega','Entregas','Entrega'],['autoescuela','Autoescuela','Autoescuela'],['personal','Personal','Personal']];
 const CAT = Object.fromEntries(CATS.map(c => [c[0], c]));
 const CATCOL = k => 'var(--cat-' + k + ')';
 const CATBG = k => 'var(--cat-' + k + '-bg)';
@@ -797,7 +722,7 @@ function cuatriNow() {
 function festivo(f) { const h = (D.calendario && D.calendario.festivos) || []; for (const x of h) { if (f >= x.ini && f <= (x.fin || x.ini)) return x; } return null; }
 
 /* ---------- almacén ---------- */
-const COLS = ['tareas','examenes','entregas','correcciones','eventos','objetivos','checks','revisiones','autoConf','autoClases','autoTests','autoErrores','autoApuntes','autoGastos','notas','recordatorios','tramites','compras','fechas','enlaces','tableros','refs','asig','sesiones','flash','animo','metas','proyectos','ajustes','practicas','pracEnt','pracConf'];
+const COLS = ['tareas','examenes','entregas','correcciones','eventos','objetivos','checks','revisiones','autoConf','autoClases','autoTests','autoErrores','autoApuntes','autoGastos','notas','recordatorios','tramites','compras','fechas','enlaces','tableros','refs','asig','sesiones','flash','animo','metas','proyectos','ajustes'];
 const Store = {
   mode: 'loading', note: '', canWrite: true, data: {}, loaded: {}, assets: null, downloads: null, db: null, pending: new Map(),
   list(col) { return Object.values(this.data[col] || {}); },
@@ -1237,7 +1162,6 @@ function eventsRange(from, to, opts = {}) {
   for (let f = from; f <= to; f = addDays(f, 1)) out.push(...classesOn(f));
   exams().filter(examActive).forEach(e => { if (e.f >= from && e.f <= to) out.push({kind: 'examen', cat: 'examen', id: e.id, f: e.f, i: e.i, e: e.e, t: 'Examen · ' + ((subj(e.cod) || {}).corto || e.titulo), sub: e.aula, cod: e.cod, fixed: !!e.official, ref: e}); });
   Store.list('entregas').forEach(x => { if (x.f && x.f >= from && x.f <= to && x.estado !== 'confirmada') out.push({kind: 'entrega', cat: 'entrega', id: x.id, f: x.f, i: x.h || '', e: x.h ? fromMin(toMin(x.h) + 30) : '', t: 'Entrega · ' + x.titulo, sub: (subj(x.cod) || {}).corto || '', cod: x.cod, ref: x, allDay: !x.h}); });
-  Store.list('practicas').forEach(x => { if ((x.estado === 'programada' || x.estado === 'hecha') && x.f >= from && x.f <= to) { const en = prEnt(x.ent); out.push({kind: 'practica', cat: 'practicas', id: x.id, f: x.f, i: x.i || '', e: x.e || '', t: 'Prácticas' + (en ? ' · ' + en.nombre : ''), sub: x.actividad || x.lugar || (en && en.direccion) || '', ref: x, allDay: !x.i}); } });
   Store.list('autoClases').forEach(x => { if (x.estado !== 'cancelada' && x.f >= from && x.f <= to) out.push({kind: 'auto', cat: 'autoescuela', id: x.id, f: x.f, i: x.h, e: x.h ? fromMin(toMin(x.h) + (+x.dur || 45)) : '', t: 'Autoescuela' + (x.prof ? ' · ' + x.prof : ''), sub: x.trab || '', ref: x}); });
   const conf = Store.get('autoConf', 'main') || {};
   [['fT', 'Examen teórico DGT'], ['fP', 'Examen práctico DGT']].forEach(([k, n]) => { if (conf[k] && conf[k] >= from && conf[k] <= to) out.push({kind: 'autoexam', cat: 'autoescuela', id: 'ax-' + k, f: conf[k], i: conf[k + 'h'] || '', e: conf[k + 'h'] ? fromMin(toMin(conf[k + 'h']) + 45) : '', t: n, fixed: true, allDay: !conf[k + 'h']}); });
@@ -1256,12 +1180,6 @@ function alerts() {
   Store.list('recordatorios').forEach(x => { if (!x.hecho && x.f && x.f <= addDays(t, 1)) out.push({u: x.f <= t ? 0 : 1, txt: 'Recordatorio: ' + x.texto, sub: rel(x.f, x.h), go: 'olvidar', f: x.f}); });
   Store.list('tramites').forEach(x => { if (x.estado !== 'hecho' && x.f) { const n = diffDays(t, x.f); if (n <= 10) out.push({u: urg(x.f), txt: 'Trámite: ' + x.titulo, sub: (n < 0 ? 'plazo vencido ' : 'plazo ') + rel(x.f), go: 'olvidar', f: x.f}); } });
   Store.list('fechas').forEach(x => { if (!x.md) return; let f = t.slice(0, 4) + '-' + x.md; if (f < t) f = (+t.slice(0, 4) + 1) + '-' + x.md; const n = diffDays(t, f); if (n <= 7) out.push({u: n <= 1 ? 0 : 2, txt: (x.tipo === 'cumple' ? 'Cumpleaños de ' : '') + x.nombre, sub: rel(f), go: 'olvidar', f}); });
-  Store.list('practicas').forEach(x => {
-    if (x.estado !== 'programada') return; const en = prEnt(x.ent);
-    if (!prEnded(x) && (x.f === t || x.f === addDays(t, 1))) out.push({u: x.f === t ? 0 : 1, txt: 'Prácticas sociales' + (en ? ' en ' + en.nombre : ''), sub: rel(x.f, x.i), go: 'practicas', f: x.f});
-    else if (prEnded(x) && x.f >= addDays(t, -14)) out.push({u: 1, txt: '¿Fuiste a prácticas el ' + fD(x.f) + '?', sub: 'Regístrala para que cuenten tus horas', go: 'practicas', f: x.f});
-  });
-  if (Store.list('practicas').length || Store.list('pracEnt').length) { const ps = prStats(), c = ps.cur, n = diffDays(t, c.fin); if (c.h < c.obj && t >= c.ini && n >= 0 && n <= 21) out.push({u: n <= 7 ? 0 : 1, txt: 'Prácticas: te faltan ' + prH(c.obj - c.h) + ' este cuatrimestre', sub: 'termina ' + rel(c.fin), go: 'practicas', f: c.fin}); }
   Store.list('autoClases').forEach(x => { if (x.estado === 'programada' && x.f >= t && x.f <= addDays(t, 1)) out.push({u: 1, txt: 'Clase de autoescuela', sub: rel(x.f, x.h), go: 'autoescuela', f: x.f}); });
   const conf = Store.get('autoConf', 'main') || {};
   [['fT', 'Examen teórico'], ['fP', 'Examen práctico']].forEach(([k, n]) => { if (conf[k]) { const d = diffDays(t, conf[k]); if (d >= 0 && d <= 10) out.push({u: urg(conf[k]), txt: n + ' de conducir', sub: rel(conf[k], conf[k + 'h']), go: 'autoescuela', f: conf[k]}); } });
@@ -1271,7 +1189,7 @@ function alerts() {
 /* ---------- navegación ---------- */
 const NAV = [
   ['Hoy', [['inicio', 'Inicio', 'home']]],
-  ['Universidad', [['calendario', 'Calendario', 'cal'], ['examenes', 'Exámenes', 'exam'], ['tareas', 'Tareas', 'task'], ['entregas', 'Entregas', 'box'], ['practicas', 'Prácticas sociales', 'people'], ['correcciones', 'Correcciones', 'pen'], ['asignaturas', 'Asignaturas', 'book']]],
+  ['Universidad', [['calendario', 'Calendario', 'cal'], ['examenes', 'Exámenes', 'exam'], ['tareas', 'Tareas', 'task'], ['entregas', 'Entregas', 'box'], ['correcciones', 'Correcciones', 'pen'], ['asignaturas', 'Asignaturas', 'book']]],
   ['Mi vida', [['objetivos', 'Objetivos', 'target'], ['autoescuela', 'Autoescuela', 'car'], ['olvidar', 'No se me puede olvidar', 'pin'], ['referencias', 'Referencias', 'img']]],
   ['Estudio', [['estudio', 'Herramientas de estudio', 'timer'], ['metas', 'Ánimo, metas y proyectos', 'heart']]],
   ['', [['ajustes', 'Ajustes y exportar', 'gear']]],
@@ -1286,7 +1204,6 @@ function navCount(v) {
   const t = today();
   if (v === 'tareas') { const n = Store.list('tareas').filter(x => x.estado !== 'hecha' && x.f && x.f <= t).length; return n ? [n, true] : null; }
   if (v === 'entregas') { const n = Store.list('entregas').filter(x => x.estado === 'pendiente').length; return n ? [n, Store.list('entregas').some(x => x.estado === 'pendiente' && x.f && diffDays(t, x.f) <= 2)] : null; }
-  if (v === 'practicas') { const pr = Store.list('practicas').filter(x => x.estado === 'programada'); if (pr.some(x => x.f === t && !prEnded(x))) return ['hoy', true]; const n = pr.filter(prEnded).length; return n ? [n, false] : null; }
   if (v === 'correcciones') { const n = Store.list('correcciones').filter(x => x.estado !== 'ok').length; return n ? [n, false] : null; }
   if (v === 'examenes') { const e = nextExam(); if (!e) return null; const n = diffDays(t, e.f); return n <= 14 ? [n === 0 ? 'hoy' : n + 'd', n <= 3] : null; }
   return null;
@@ -1403,8 +1320,6 @@ function searchIndex() {
   add('flash', 'cards', x => x.q, () => 'Tarjeta', 'estudio');
   add('proyectos', 'layers', x => x.titulo, () => 'Proyecto', 'metas');
   add('autoClases', 'car', x => 'Clase de autoescuela · ' + fD(x.f), x => x.trab || '', 'autoescuela');
-  add('practicas', 'people', x => (x.actividad || 'Sesión de prácticas') + ' · ' + fD(x.f), x => 'Prácticas sociales' + (prEnt(x.ent) ? ' · ' + prEnt(x.ent).nombre : ''), 'practicas');
-  Store.list('pracEnt').forEach(e => idx.push({t: e.nombre, k: 'Entidad de prácticas', i: 'place', extra: [e.contacto, e.direccion, e.programa, e.colectivo].join(' '), go: () => { UI.pr.tab = 'entidad'; go('practicas'); }}));
   add('autoApuntes', 'car', x => x.titulo, () => 'Apunte de autoescuela', 'autoescuela');
   ((D.enlaces || []).concat(Store.list('enlaces'))).forEach(l => idx.push({t: l.t, k: 'Enlace', i: 'link', extra: l.u, go: () => window.open(l.u, '_blank', 'noopener')}));
   return idx;
@@ -1609,7 +1524,7 @@ VIEWS.calendario = {
     else if (c.mode === 'horario') body = timetable(c.cuatri);
     else body = weekView(c.mode === 'dia' ? [c.f] : Array.from({length: 7}, (_, i) => addDays(weekStart(c.f), i)));
     const r1 = semRange('1'), r2 = semRange('2');
-    const foot = '<div class="legend">' + (c.mode === 'horario' ? '<span>' + esc(D.horario.nota) + '</span>' : '<span>Las clases salen solas del horario de 2ºB' + (r1 && r2 ? ' (' + fD(r1.ini) + '–' + fD(r1.fin) + ' y ' + fD(r2.ini) + '–' + fD(r2.fin) + ')' : '') + '. Arrastra tus eventos, entregas, prácticas sociales y clases de autoescuela para moverlos.</span>') + '</div>';
+    const foot = '<div class="legend">' + (c.mode === 'horario' ? '<span>' + esc(D.horario.nota) + '</span>' : '<span>Las clases salen solas del horario de 2ºB' + (r1 && r2 ? ' (' + fD(r1.ini) + '–' + fD(r1.fin) + ' y ' + fD(r2.ini) + '–' + fD(r2.fin) + ')' : '') + '. Arrastra tus eventos, entregas y clases de autoescuela para moverlos.</span>') + '</div>';
     return head + nav + body + foot;
   },
   after() { calDrag(); const nl = $('.nowline'); if (nl && UI.cal.mode !== 'mes' && !UI.cal._scrolled) { UI.cal._scrolled = true; } },
@@ -1628,7 +1543,7 @@ function monthView() {
   }
   return h + '</div>';
 }
-function movable(e) { return ['evento', 'auto', 'entrega', 'tarea', 'practica'].includes(e.kind) || (e.kind === 'examen' && !e.fixed); }
+function movable(e) { return ['evento', 'auto', 'entrega', 'tarea'].includes(e.kind) || (e.kind === 'examen' && !e.fixed); }
 function evChip(e) {
   return '<div class="ev' + (movable(e) ? '' : ' fixed') + '" style="' + evStyle(e) + '" data-ev data-k="' + e.kind + '" data-id="' + esc(e.id) + '" data-f="' + e.f + '" data-i="' + esc(e.i || '') + '" data-e="' + esc(e.e || '') + '" data-mv="' + (movable(e) ? 1 : 0) + '" title="' + esc(e.t + (e.i ? ' · ' + e.i : '') + (e.sub ? ' · ' + e.sub : '')) + '">' + (e.i && !e.allDay ? '<span class="h">' + esc(e.i) + '</span>' : '') + '<span class="t">' + esc(e.t) + '</span></div>';
 }
@@ -1717,7 +1632,6 @@ function openEv(kind, id, f) {
   if (kind === 'autoexam') { go('autoescuela'); return; }
   if (kind === 'fecha') { UI.olv = 'fechas'; go('olvidar'); return; }
   if (kind === 'tarea') { openTaskForm(Store.get('tareas', id)); return; }
-  if (kind === 'practica') { openPrDetail(id); return; }
   if (kind === 'evento') { openEventForm(Store.get('eventos', id), f); }
 }
 function calDrag() {
@@ -1766,7 +1680,6 @@ async function moveEv(kind, id, from, f, i, e) {
   } else if (kind === 'auto') { await Store.patch('autoClases', id, {f, h: i || (Store.get('autoClases', id) || {}).h}); toast('Clase movida a ' + fD(f) + (i ? ' · ' + i : '')); }
   else if (kind === 'entrega') { const x = Store.get('entregas', id); await Store.patch('entregas', id, {f, h: x && x.h ? (i || x.h) : ''}); toast('Entrega movida a ' + fD(f)); }
   else if (kind === 'tarea') { await Store.patch('tareas', id, {f}); toast('Tarea movida a ' + fD(f)); }
-  else if (kind === 'practica') { const x = Store.get('practicas', id); if (!x) return; await Store.patch('practicas', id, {f, i: i || x.i || '', e: e || x.e || ''}); toast('Prácticas movidas a ' + fD(f) + (i ? ' · ' + i : '')); }
   else if (kind === 'examen') { await Store.patch('examenes', id, {f, i: i || '', e: e || ''}); toast('Examen movido a ' + fD(f)); }
 }
 const REP_OPTS = [['', 'No se repite'], ['diaria', 'Cada día'], ['laborables', 'De lunes a viernes'], ['semanal', 'Cada semana'], ['mensual', 'Cada mes'], ['anual', 'Cada año']];
@@ -1780,7 +1693,7 @@ function openEventForm(ev, occ) {
     value: Object.assign({cat: 'personal', allDay: false}, ev, {rep: ev.rep ? ev.rep.freq : '', hasta: ev.rep ? ev.rep.hasta : ''}),
     fields: [
       {k: 'titulo', label: 'Título', req: true, full: true, ph: 'Por ejemplo: visita de obra, cumpleaños de Lucía…'},
-      {k: 'cat', label: 'Categoría', type: 'seg', full: true, options: CATS.filter(c => c[0] !== 'practicas').map(c => [c[0], c[2]])},
+      {k: 'cat', label: 'Categoría', type: 'seg', full: true, options: CATS.map(c => [c[0], c[2]])},
       {k: 'f', label: 'Fecha', type: 'date', req: true, def: today()},
       {k: 'allDay', label: 'Todo el día', type: 'check'},
       {k: 'i', label: 'Empieza', type: 'time'},
@@ -2143,597 +2056,6 @@ function openCorrForm(x) {
     onSubmit: v => Store.put('correcciones', x.id || null, Object.assign({}, x, v, {creada: x.creada || Date.now()})).then(() => toast(isNew ? 'Corrección apuntada' : 'Corrección guardada'))});
 }
 
-/* ===================== Prácticas sociales (Responsabilidad Social · 3729) =====================
-   Según la web de Acción Social de la UFV (octubre de 2026): 25 horas por cuatrimestre y al menos
-   2 horas a la semana en la entidad asignada; si faltas, avisa antes, justifícalo y recupera las horas;
-   la entidad lleva el registro, pero conviene apuntar las horas también. Según la guía docente
-   2026-27: participación durante todo el curso, APTO (lo evalúa Acción Social) y memoria (10 %, mentor). */
-UI.pr = {tab: 'calendario', f: today(), per: 'todo', est: '', ent: '', q: ''};
-const PR_COD = '3729';
-const PR_EST = [['programada', 'Programada'], ['hecha', 'Hecha'], ['falte', 'No fui'], ['cancelada', 'Cancelada']];
-const PR_EST_PILL = {programada: ['info', 'programada'], hecha: ['ok', 'hecha'], falte: ['err', 'no fui'], cancelada: ['neutral', 'cancelada']};
-const PR_TIPO = [['sesion', 'Sesión normal'], ['recuperacion', 'Recuperación de horas'], ['formacion', 'Formación'], ['reunion', 'Reunión con la entidad'], ['especial', 'Actividad especial'], ['otro', 'Otra']];
-const PR_TIPO_L = Object.fromEntries(PR_TIPO);
-const PR_PROGRAMAS = ['Instituciones (ONG, fundación, asociación)', 'Unidiversidad', 'Avanza', 'SAPNE', 'Campus Universus', 'VAS', 'Voluntariado Social Corporativo', 'Mentorías a personas con discapacidad', 'TFG Social'];
-const PR_COLECTIVOS = ['Personas mayores', 'Infancia', 'Adolescentes', 'Personas con discapacidad', 'Personas sin hogar', 'Personas migrantes y refugiadas', 'Personas enfermas u hospitalizadas', 'Adicciones', 'Mujeres en situación de vulnerabilidad', 'Personas presas', 'Familias en riesgo de exclusión'];
-const PR_AS = {mail: 'accionsocial@ufv.es', tel: '+34913248064', telTxt: '91 324 80 64', horario: 'De lunes a viernes, de 9:30 a 14:00 y de 16:00 a 18:30', web: 'https://www.ufv.es/accion-social/'};
-const PR_PASOS = [
-  ['reunion', 'Reunión inicial con la entidad', 'Suele ser a mediados de septiembre. Si nadie te ha llamado, pregunta en Acción Social.'],
-  ['contacto', 'Tener el contacto del responsable', 'Teléfono o correo, para avisar si un día no puedes ir.'],
-  ['horario', 'Día y hora fijos (mínimo 2 h a la semana)', ''],
-  ['registro', 'Comprobar que la entidad apunta tus horas', 'El registro oficial lo lleva la entidad; el tuyo sirve para que no haya errores.'],
-  ['mentoria1', 'Mentoría individual 1', ''],
-  ['mentoria2', 'Mentoría individual 2', ''],
-  ['mentoriag', 'Mentoría en grupo', ''],
-  ['memoria', 'Memoria de prácticas entregada', 'Cuenta un 10 % de la nota y la evalúa tu mentor/a.'],
-];
-const prConf = () => Store.get('pracConf', 'main') || {};
-const prEnts = () => Store.list('pracEnt').sort((a, b) => ((b.activa !== false) - (a.activa !== false)) || ((a.creada || 0) - (b.creada || 0)));
-const prEnt = id => (id ? Store.get('pracEnt', id) : null) || null;
-const prMainEnt = () => prEnts().find(e => e.activa !== false) || null;
-const prColor = x => { const e = prEnt(x && x.ent); return (e && e.color) || 'var(--cat-practicas)'; };
-function prHours(x) {
-  if (x.horas != null && x.horas !== '' && isFinite(+x.horas)) return Math.max(0, +x.horas);
-  if (x.i && x.e) return Math.max(0, (toMin(x.e) - toMin(x.i)) / 60);
-  return 0;
-}
-const prN = h => (Math.round(h * 100) / 100).toLocaleString('es-ES', {maximumFractionDigits: 2});
-const prH = h => prN(h) + ' h';
-const prMinSem = () => { const v = num(prConf().minSem); return v != null ? v : 2; };
-const prByDT = (a, b) => (a.f + (a.i || '')).localeCompare(b.f + (b.i || ''));
-const prSum = l => l.reduce((a, x) => a + prHours(x), 0);
-function prPeriods() {
-  const c = prConf(), s2 = semRange('2'); const p2 = (s2 && s2.ini) || '2027-01-25';
-  const o = (v, d) => (v != null && v !== '' && isFinite(+v)) ? +v : d;
-  return [
-    {k: '1', n: 'Primer cuatrimestre', ini: c.ini1 || '2026-09-01', fin: c.fin1 || addDays(p2, -1), obj: o(c.obj1, 25)},
-    {k: '2', n: 'Segundo cuatrimestre', ini: c.ini2 || p2, fin: c.fin2 || '2027-05-31', obj: o(c.obj2, 25)},
-  ];
-}
-function prEnded(x) { const t = today(); return x.f < t || (x.f === t && toMin(x.e || x.i || '23:59') < nowMin()); }
-function prStats() {
-  const all = Store.list('practicas'); const t = today();
-  const hechas = all.filter(x => x.estado === 'hecha');
-  const prog = all.filter(x => x.estado === 'programada').sort(prByDT);
-  const pers = prPeriods().map(p => { const l = hechas.filter(x => x.f >= p.ini && x.f <= p.fin); return Object.assign({}, p, {h: prSum(l), cnt: l.length, hp: prSum(prog.filter(x => x.f >= p.ini && x.f <= p.fin && !prEnded(x)))}); });
-  const cur = pers.find(p => t >= p.ini && t <= p.fin) || pers.find(p => t < p.ini) || pers[pers.length - 1];
-  const ws = weekStart(t), we = addDays(ws, 6);
-  const faltas = all.filter(x => x.estado === 'falte');
-  const vals = hechas.filter(x => x.valor).map(x => +x.valor);
-  return {all, hechas, prog, pers, cur, pend: prog.filter(prEnded), next: prog.find(x => !prEnded(x)),
-    semana: prSum(hechas.filter(x => x.f >= ws && x.f <= we)), semanaProg: prSum(prog.filter(x => x.f >= ws && x.f <= we && !prEnded(x))),
-    faltas, porRecuperar: Math.max(0, prSum(faltas) - prSum(hechas.filter(x => x.tipo === 'recuperacion'))),
-    total: prSum(hechas), objTotal: pers.reduce((a, p) => a + p.obj, 0), sinConf: hechas.filter(x => !x.confirmada),
-    media: vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : null, minSem: prMinSem()};
-}
-function prWeeks(p) {
-  const hechas = Store.list('practicas').filter(x => x.estado === 'hecha'); const t = today();
-  const first = hechas.filter(x => x.f >= p.ini && x.f <= p.fin).map(x => x.f).sort()[0];
-  let w = weekStart(first && first > p.ini ? first : p.ini); const last = weekStart(t < p.fin ? t : p.fin);
-  const out = [];
-  while (w <= last && out.length < 40) { const we = addDays(w, 6); out.push({w, h: prSum(hechas.filter(x => x.f >= w && x.f <= we)), now: w === weekStart(t)}); w = addDays(w, 7); }
-  return out;
-}
-const prDiasTxt = d => { const l = (d || []).slice().sort().map(n => DIAS[n - 1]); return l.length > 1 ? l.slice(0, -1).join(', ') + ' y ' + l[l.length - 1] : (l[0] || ''); };
-const prHorario = e => e ? [e.dias && e.dias.length ? prDiasTxt(e.dias) : '', e.hi ? 'de ' + e.hi + (e.he ? ' a ' + e.he : '') : ''].filter(Boolean).join(', ') : '';
-function prSafeUrl(u) { u = String(u || '').trim(); if (!u) return ''; if (/^https?:\/\//i.test(u)) return u; return /^[\w.-]+\.[a-z]{2,}(\/.*)?$/i.test(u) ? 'https://' + u : ''; }
-const prTel = t => String(t || '').replace(/[^\d+]/g, '');
-const prMaps = a => 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(a);
-
-/* ---------- vista ---------- */
-VIEWS.practicas = {
-  fab() { openPrForm({f: today()}); }, fabLabel: 'Registrar sesión',
-  render() {
-    const u = UI.pr, s = prStats(), me = prMainEnt();
-    const sub = me ? esc(me.nombre) + (me.programa ? ' · ' + esc(me.programa) : '') + (prHorario(me) ? ' · ' + esc(prHorario(me)) : '') : '25 h por cuatrimestre y al menos 2 h a la semana en la entidad que te asigna Acción Social.';
-    const head = pageHead('Universidad · Responsabilidad Social', 'Prácticas sociales', sub, '<button type="button" class="btn line" data-act="prSerie">' + ic('cal', 's') + ' Programar varias</button><button type="button" class="btn cta" data-act="prNew">' + ic('plus', 's') + ' Registrar sesión</button>');
-    const c = s.cur, pct = c && c.obj ? clamp(c.h / c.obj, 0, 1) : 0, ne = s.next ? prEnt(s.next.ent) : null;
-    const kpis = '<div class="kpis" style="margin-bottom:16px">' +
-      '<div class="kpi"><span>' + esc(c.n) + '</span><b>' + prN(c.h) + '<small> / ' + prN(c.obj) + ' h</small></b><div class="bar" style="--c:var(--cat-practicas);margin-top:4px" role="progressbar" aria-valuemin="0" aria-valuemax="' + c.obj + '" aria-valuenow="' + prN(c.h) + '"><i style="width:' + (pct * 100).toFixed(1) + '%"></i></div></div>' +
-      '<div class="kpi"><span>Esta semana</span><b>' + prN(s.semana) + '<small> h</small></b><span>' + (s.semana >= s.minSem ? 'mínimo de ' + prH(s.minSem) + ' cumplido ✓' : s.semanaProg ? '+' + prH(s.semanaProg) + ' programadas' : 'mínimo ' + prH(s.minSem) + ' a la semana') + '</span></div>' +
-      '<div class="kpi"><span>Próxima sesión</span><b>' + (s.next ? esc(s.next.f === today() ? 'Hoy' : fD(s.next.f)) : '—') + '</b><span class="ell">' + (s.next ? esc([s.next.i ? s.next.i + (s.next.e ? '–' + s.next.e : '') : '', ne && ne.nombre].filter(Boolean).join(' · ')) : 'sin programar') + '</span></div>' +
-      '<div class="kpi"><span>Todo el curso</span><b>' + prN(s.total) + '<small> / ' + prN(s.objTotal) + ' h</small></b><span>' + (s.porRecuperar ? '<b style="font:inherit;color:var(--err)">' + prH(s.porRecuperar) + ' por recuperar</b>' : plural(s.hechas.length, 'sesión hecha', 'sesiones hechas')) + '</span></div></div>';
-    const pend = s.pend.length ? '<section class="card stack-s urg-1" style="background:var(--c-bg);margin-bottom:16px"><div class="card-h"><h3>¿Fuiste?</h3><span class="small muted">' + plural(s.pend.length, 'sesión pasada sin registrar', 'sesiones pasadas sin registrar') + '</span></div><div class="list">' +
-      s.pend.slice(-4).reverse().map(x => { const e = prEnt(x.ent); return '<div class="item pend"><span class="chip" style="min-width:86px;justify-content:center">' + esc(fD(x.f)) + '</span><div class="grow"><span class="t">' + esc([x.i ? x.i + (x.e ? '–' + x.e : '') : '', x.actividad || (e && e.nombre) || 'Sesión de prácticas'].filter(Boolean).join(' · ')) + '</span></div><div class="row-nw pbtns"><button type="button" class="btn sm" data-act="prFui" data-id="' + esc(x.id) + '">' + ic('check', 's') + ' Sí</button><button type="button" class="btn sm line" data-act="prNoFui" data-id="' + esc(x.id) + '">No fui</button></div></div>'; }).join('') + '</div></section>' : '';
-    const tabs = subtabs('prTab', u.tab, [['calendario', 'Calendario'], ['registro', 'Registro', s.all.length || ''], ['entidad', 'Entidad'], ['seguimiento', 'Seguimiento']]);
-    const body = u.tab === 'registro' ? prLogView(s) : u.tab === 'entidad' ? prEntView(s) : u.tab === 'seguimiento' ? prSegView(s) : prCalView(s);
-    return head + kpis + pend + tabs + body;
-  },
-  after() {
-    prDrag();
-    if (UI.focus && Store.get('practicas', UI.focus)) { const id = UI.focus; UI.focus = null; setTimeout(() => openPrDetail(id), 30); }
-  },
-};
-ACT.prTab = el => { UI.pr.tab = el.dataset.v; renderAll(); };
-ACT.prNew = () => openPrForm({f: today()});
-ACT.prNav = el => { UI.pr.f = addMonths(UI.pr.f, +el.dataset.d); renderAll(); };
-ACT.prToday = () => { UI.pr.f = today(); renderAll(); };
-ACT.prDay = (el, e) => {
-  const chip = e.target.closest('[data-pr]');
-  if (chip) { openPrDetail(chip.dataset.pr); return; }
-  const f = el.dataset.f, l = Store.list('practicas').filter(x => x.f === f).sort(prByDT);
-  if (e.target.closest('.more') || (l.length && matchMedia('(max-width: 520px)').matches)) {
-    const d = openDlg({title: fLong(f), body: (l.length ? '<div class="list">' + l.map(x => prRow(x, false)).join('') + '</div>' : ''), foot: '<span class="sp"></span><button type="button" class="btn cta" data-new>' + ic('plus', 's') + ' Otra sesión este día</button>'});
-    d.el.addEventListener('click', ev => { const r = ev.target.closest('[data-act="prOpen"]'); if (r) { d.close(); openPrDetail(r.dataset.id); } if (ev.target.closest('[data-new]')) { d.close(); openPrForm({f}); } });
-    return;
-  }
-  openPrForm({f});
-};
-ACT.prOpen = el => openPrDetail(el.dataset.id);
-ACT.prFui = el => { const x = Store.get('practicas', el.dataset.id); if (!x) return; Store.patch('practicas', x.id, {estado: 'hecha'}).then(() => { toast('¡Bien! Cuenta lo que hiciste'); openPrForm(Object.assign({}, x, {estado: 'hecha'})); }); };
-ACT.prNoFui = el => prMarkMissed(el.dataset.id);
-async function prMarkMissed(id) {
-  const x = Store.get('practicas', id); if (!x) return;
-  const d = openDlg({title: 'No fuiste a prácticas', body: '<p>' + esc(fLong(x.f)) + (x.i ? ' · ' + esc(x.i) : '') + ' · ' + prH(prHours(x)) + '</p><label class="row-nw small"><input type="checkbox" class="check" id="pr-av"' + (x.avise ? ' checked' : '') + '> Avisé a la entidad con antelación</label><label class="row-nw small"><input type="checkbox" class="check" id="pr-ju"' + (x.justif ? ' checked' : '') + '> Está justificada</label><label class="row-nw small"><input type="checkbox" class="check" id="pr-ca"> La canceló la entidad (no hay que recuperarla)</label><p class="small muted">Si faltas, Acción Social pide avisar antes, justificarlo y recuperar las horas.</p>',
-    foot: '<span class="sp"></span><button type="button" class="btn ghost" data-no>Cancelar</button><button type="button" class="btn" data-yes>Guardar</button>'});
-  d.el.querySelector('[data-no]').onclick = () => d.close();
-  d.el.querySelector('[data-yes]').onclick = async () => {
-    const cancel = d.el.querySelector('#pr-ca').checked;
-    await Store.patch('practicas', id, {estado: cancel ? 'cancelada' : 'falte', avise: d.el.querySelector('#pr-av').checked, justif: d.el.querySelector('#pr-ju').checked});
-    d.close();
-    if (!cancel && await ask('¿Programas ya una sesión para recuperar estas ' + prH(prHours(x)) + '?', {ok: 'Programar recuperación', cancel: 'Más tarde', title: 'Recuperar horas'})) openPrForm({f: addDays(x.f, 7) > today() ? addDays(x.f, 7) : today(), i: x.i, e: x.e, ent: x.ent, tipo: 'recuperacion', estado: 'programada', actividad: 'Recuperación de horas'});
-  };
-}
-
-/* ---------- calendario exclusivo ---------- */
-function prChip(x, mob) {
-  const e = prEnt(x.ent); const h = prHours(x);
-  const name = x.actividad || (e && e.nombre) || PR_TIPO_L[x.tipo] || 'Prácticas';
-  const lab = mob ? '<span class="t">' + esc(x.i ? x.i.replace(/:00$/, 'h') : prN(h) + 'h') + '</span>' : (x.i ? '<span class="h">' + esc(x.i) + '</span>' : '') + '<span class="t">' + esc(name) + '</span>';
-  const tip = [fD(x.f), x.i ? x.i + (x.e ? '–' + x.e : '') : '', prH(h), name, (PR_EST_PILL[x.estado] || [])[1]].filter(Boolean).join(' · ');
-  return '<div class="pchip ' + esc(x.estado || 'programada') + '" style="--pc:' + esc(prColor(x)) + '" data-pr="' + esc(x.id) + '" data-f="' + esc(x.f) + '" title="' + esc(tip) + '" tabindex="0" role="button" aria-label="' + esc(tip) + '">' + (x.estado === 'hecha' ? '<span class="ck" aria-hidden="true">✓</span>' : '') + lab + '</div>';
-}
-function prCalView(s) {
-  const u = UI.pr; const d = pd(u.f); const y = d.getFullYear(), m = d.getMonth();
-  const first = ymd(new Date(y, m, 1)), last = ymd(new Date(y, m + 1, 0));
-  const start = weekStart(first), nW = diffDays(start, weekStart(last)) / 7 + 1, end = addDays(start, nW * 7 - 1);
-  const list = Store.list('practicas').filter(x => x.f >= start && x.f <= end).sort(prByDT);
-  const by = {}; list.forEach(x => { (by[x.f] = by[x.f] || []).push(x); });
-  const t = today(), mob = matchMedia('(max-width: 520px)').matches, maxN = mob ? 2 : 3, min = s.minSem;
-  const ents = prEnts().filter(e => list.some(x => x.ent === e.id));
-  let h = '<div class="cal-head"><div class="row-nw"><button type="button" class="ib" data-act="prNav" data-d="-1" aria-label="Mes anterior">' + ic('chevL') + '</button><button type="button" class="btn sm line" data-act="prToday">Hoy</button><button type="button" class="ib" data-act="prNav" data-d="1" aria-label="Mes siguiente">' + ic('chevR') + '</button></div><h2>' + MESES[m] + ' ' + y + '</h2>' +
-    (ents.length > 1 ? '<div class="row" style="margin-left:auto">' + ents.map(e => '<span class="chip dot" style="--c:' + esc(e.color || 'var(--cat-practicas)') + '">' + esc(e.nombre) + '</span>').join('') + '</div>' : '') + '</div>';
-  h += '<div class="pmonth" role="grid" aria-label="Calendario de prácticas sociales">' + DIA3.map(x => '<div class="dow">' + x + '</div>').join('') + '<div class="dow wk" title="Horas hechas cada semana">' + (mob ? 'h' : 'Semana') + '</div>';
-  for (let w = 0; w < nW; w++) {
-    let wh = 0, wp = 0;
-    for (let i = 0; i < 7; i++) {
-      const f = addDays(start, w * 7 + i), l = by[f] || [], fe = festivo(f), hol = fe && !fe.dudoso;
-      l.forEach(x => { if (x.estado === 'hecha') wh += prHours(x); else if (x.estado === 'programada' && !prEnded(x)) wp += prHours(x); });
-      h += '<div class="mday pday' + (f.slice(0, 7) !== first.slice(0, 7) ? ' out' : '') + (f === t ? ' today' : '') + (hol ? ' hol' : '') + '" data-prday="' + f + '" data-act="prDay" data-f="' + f + '" role="gridcell" aria-label="' + esc(fLong(f) + (l.length ? ', ' + plural(l.length, 'sesión', 'sesiones') : '')) + '"><span class="dn">' + pd(f).getDate() + '</span>' +
-        (hol && !mob ? '<span class="hl">' + esc(fe.n) + '</span>' : '') + l.slice(0, maxN).map(x => prChip(x, mob)).join('') + (l.length > maxN ? '<span class="more">+' + (l.length - maxN) + '</span>' : '') + '</div>';
-    }
-    const ws = addDays(start, w * 7), cls = wh >= min ? 'ok' : wh > 0 ? 'low' : wp > 0 ? 'plan' : 'none';
-    h += '<div class="pwk ' + cls + '" title="' + esc('Semana del ' + fD(ws) + ': ' + prH(wh) + ' hechas' + (wp ? ', ' + prH(wp) + ' programadas' : '') + ' (mínimo ' + prH(min) + ')') + '"><b>' + (wh ? prN(wh) : wp ? '' : '–') + '</b>' + (wh ? '<span>' + (wh >= min ? '✓' : 'h') + '</span>' : '') + (wp ? '<span class="pl">+' + prN(wp) + (mob ? '' : ' h') + '</span>' : '') + '</div>';
-  }
-  h += '</div><div class="legend plegend"><span><i class="lg-h"></i>hecha</span><span><i class="lg-p"></i>programada</span><span><i class="lg-f"></i>no fui</span><span><i class="lg-ok"></i>semana con ' + prH(min) + ' o más</span><span>Toca un día para registrar una sesión' + (mob ? '' : '; arrastra una sesión para cambiarla de día') + '.</span></div>';
-  const mon = list.filter(x => x.f >= first && x.f <= last);
-  const mh = prSum(mon.filter(x => x.estado === 'hecha')), mp = prSum(mon.filter(x => x.estado === 'programada' && !prEnded(x)));
-  h += '<section class="card" style="margin-top:14px"><div class="card-h"><h3>Sesiones de ' + MESES[m] + '</h3><span class="small muted">' + prH(mh) + ' hechas' + (mp ? ' · ' + prH(mp) + ' programadas' : '') + '</span></div>' +
-    (mon.length ? '<div class="list">' + mon.map(x => prRow(x, false)).join('') + '</div>' : (s.all.length ? '<p class="muted small">Este mes no tienes sesiones. Toca un día del calendario para añadir una.</p>' : empty('Empieza tu registro', 'Toca un día del calendario o pulsa «Registrar sesión». Si vas siempre el mismo día, usa «Programar varias» y se rellenan solas.', '<div class="row" style="justify-content:center"><button type="button" class="btn cta" data-act="prNew">' + ic('plus', 's') + ' Registrar sesión</button><button type="button" class="btn line" data-act="prEntNew">' + ic('place', 's') + ' Añadir mi entidad</button></div>'))) + '</section>';
-  return h;
-}
-function prDrag() {
-  const root = $('#view'); if (!root || root._prDrag) return; root._prDrag = true;
-  root.addEventListener('keydown', e => { const c = e.target.closest && e.target.closest('[data-pr]'); if (c && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openPrDetail(c.dataset.pr); } });
-  makeDrag({root, item: '[data-pr]',
-    onStart(it) {
-      if (UI.view !== 'practicas') return null;
-      const r = it.getBoundingClientRect(); const g = it.cloneNode(true);
-      g.classList.add('kghost'); Object.assign(g.style, {position: 'fixed', left: r.left + 'px', top: r.top + 'px', width: r.width + 'px'});
-      document.body.appendChild(g); it.classList.add('dragging');
-      return {g, dx: r.width / 2, dy: r.height / 2};
-    },
-    onMove(ctx, ev) {
-      if (!ctx || !ctx.g) return;
-      ctx.g.style.left = (ev.clientX - ctx.dx) + 'px'; ctx.g.style.top = (ev.clientY - ctx.dy) + 'px';
-      $$('.pday.drop').forEach(x => x.classList.remove('drop'));
-      ctx.g.style.display = 'none'; const under = document.elementFromPoint(ev.clientX, ev.clientY); ctx.g.style.display = '';
-      ctx.tgt = under && under.closest('[data-prday]'); if (ctx.tgt) ctx.tgt.classList.add('drop');
-    },
-    async onDrop(ctx, ev, it, cancel) {
-      if (!ctx || !ctx.g) return;
-      ctx.g.remove(); it.classList.remove('dragging'); $$('.pday.drop').forEach(x => x.classList.remove('drop'));
-      if (cancel || !ctx.tgt) return;
-      const f = ctx.tgt.dataset.prday; if (f === it.dataset.f) return;
-      await Store.patch('practicas', it.dataset.pr, {f});
-      toast('Sesión movida al ' + fD(f));
-    }});
-}
-
-/* ---------- registro (diario) ---------- */
-const prDateBox = x => { const d = pd(x.f); return '<span class="pdate ' + esc(x.estado || '') + '" style="--pc:' + esc(prColor(x)) + '"><b>' + d.getDate() + '</b><span>' + DIA3[dow(x.f) - 1] + ' ' + MES3[d.getMonth()] + '</span></span>'; };
-function prRow(x, rich) {
-  const e = prEnt(x.ent), p = PR_EST_PILL[x.estado] || PR_EST_PILL.programada, pend = x.estado === 'programada' && prEnded(x);
-  const meta = [x.i ? x.i + (x.e ? '–' + x.e : '') : '', prH(prHours(x)), e && e.nombre].filter(Boolean).join(' · ');
-  return '<button type="button" class="item click prow" data-act="prOpen" data-id="' + esc(x.id) + '">' + prDateBox(x) + '<span class="grow"><span class="t">' + esc(x.actividad || PR_TIPO_L[x.tipo] || 'Sesión de prácticas') + '</span><span class="m">' + esc(meta) + '</span>' +
-    (rich && x.desc ? '<span class="ex">' + esc(x.desc) + '</span>' : '') + (rich && x.aprendi ? '<span class="ex q">«' + esc(x.aprendi) + '»</span>' : '') +
-    '<span class="m"><span class="pill ' + (pend ? 'warn' : p[0]) + '">' + (pend ? '¿fuiste?' : p[1]) + '</span>' + (x.tipo && x.tipo !== 'sesion' ? '<span class="pill neutral">' + esc(PR_TIPO_L[x.tipo] || x.tipo) + '</span>' : '') +
-    (x.estado === 'hecha' ? (x.confirmada ? '<span class="pill ok">' + ic('check', 's') + ' en su registro</span>' : '<span class="pill warn">sin confirmar</span>') : '') + (x.estado === 'falte' ? '<span class="pill ' + (x.justif ? 'neutral' : 'err') + '">' + (x.justif ? 'justificada' : 'sin justificar') + '</span>' : '') +
-    (x.valor ? '<span class="pstars" aria-label="' + x.valor + ' de 5">' + '★'.repeat(x.valor) + '</span>' : '') + (x.foto ? ic('img', 's') : '') + '</span></span></button>';
-}
-function prLogView(s) {
-  const u = UI.pr; let l = s.all.slice();
-  const per = s.pers.find(p => p.k === u.per);
-  if (per) l = l.filter(x => x.f >= per.ini && x.f <= per.fin);
-  if (u.est) l = l.filter(x => x.estado === u.est);
-  if (u.ent) l = l.filter(x => (x.ent || '') === (u.ent === '-' ? '' : u.ent));
-  if (u.q) { const w = norm(u.q).split(/\s+/).filter(Boolean); l = l.filter(x => { const hay = norm([x.actividad, x.desc, x.aprendi, x.senti, x.personas, x.responsable, x.companeros, x.lugar, x.proxima, x.notas, (x.tags || []).join(' '), (prEnt(x.ent) || {}).nombre, PR_TIPO_L[x.tipo]].join(' ')); return w.every(t => hay.includes(t)); }); }
-  l.sort((a, b) => (b.f + (b.i || '')).localeCompare(a.f + (a.i || '')));
-  const ents = prEnts();
-  const sel = (chg, cur, opts, label) => '<select class="sel inp sm" style="width:auto" data-chg="' + chg + '" aria-label="' + label + '">' + opts.map(([k, t]) => '<option value="' + esc(k) + '"' + (cur === k ? ' selected' : '') + '>' + esc(t) + '</option>').join('') + '</select>';
-  const bar = '<div class="toolbar">' + sel('prPer', u.per, [['todo', 'Todo el curso']].concat(s.pers.map(p => [p.k, p.n])), 'Periodo') + sel('prEst', u.est, [['', 'Todas']].concat(PR_EST.map(([k, t]) => [k, k === 'falte' ? 'Faltas' : t + 's'])), 'Estado') +
-    (ents.length > 1 ? sel('prEntF', u.ent, [['', 'Todas las entidades']].concat(ents.map(e => [e.id, e.nombre]), [['-', 'Sin entidad']]), 'Entidad') : '') +
-    '<div class="search-inline">' + ic('search', 's') + '<input class="inp sm" id="prq" placeholder="Buscar en tu diario" value="' + esc(u.q) + '" data-inp="prQ"></div><span class="sp" style="flex:1"></span><button type="button" class="btn sm line" data-act="prPdfHoras">' + ic('dl', 's') + ' Registro de horas (PDF)</button><button type="button" class="btn sm line" data-act="prPdfDiario">' + ic('book', 's') + ' Diario (PDF)</button></div>';
-  if (!s.all.length) return bar + empty('Tu diario está vacío', 'Cada sesión que registres aparece aquí con lo que hiciste, con quién estuviste y lo que te llevas. Te servirá para la memoria.', '<button type="button" class="btn cta" data-act="prNew">' + ic('plus', 's') + ' Registrar sesión</button>');
-  if (!l.length) return bar + '<p class="muted small">No hay sesiones con esos filtros.</p>';
-  const groups = []; l.forEach(x => { const k = x.f.slice(0, 7); let g = groups[groups.length - 1]; if (!g || g.k !== k) { g = {k, l: []}; groups.push(g); } g.l.push(x); });
-  const done = l.filter(x => x.estado === 'hecha');
-  return bar + groups.map(g => { const d = pd(g.k + '-01'); const gh = prSum(g.l.filter(x => x.estado === 'hecha')); return '<section class="card" style="margin-bottom:12px"><div class="card-h"><h3>' + MESES[d.getMonth()] + ' ' + d.getFullYear() + '</h3><span class="small muted">' + prH(gh) + ' hechas · ' + plural(g.l.length, 'sesión', 'sesiones') + '</span></div><div class="list">' + g.l.map(x => prRow(x, true)).join('') + '</div></section>'; }).join('') +
-    '<p class="small muted">' + plural(l.length, 'sesión', 'sesiones') + ' · ' + prH(prSum(done)) + ' hechas · ' + prH(prSum(done.filter(x => x.confirmada))) + ' confirmadas en el registro de la entidad.</p>';
-}
-CHG.prPer = el => { UI.pr.per = el.value; renderAll(); };
-CHG.prEst = el => { UI.pr.est = el.value; renderAll(); };
-CHG.prEntF = el => { UI.pr.ent = el.value; renderAll(); };
-INP.prQ = el => { UI.pr.q = el.value; renderAll(); };
-
-/* ---------- entidad ---------- */
-function prEntView(s) {
-  const ents = prEnts(), c = prConf();
-  const dl = (rows) => '<dl class="pdl">' + rows.filter(r => r[1]).map(([k, v]) => '<dt>' + k + '</dt><dd>' + v + '</dd>').join('') + '</dl>';
-  const cards = ents.map(e => {
-    const l = s.all.filter(x => x.ent === e.id), hh = prSum(l.filter(x => x.estado === 'hecha')), web = prSafeUrl(e.web);
-    return '<section class="card stack pent" style="--pc:' + esc(e.color || 'var(--cat-practicas)') + '"><div class="card-h"><div class="row-nw"><span class="pdot"></span><h3>' + esc(e.nombre) + '</h3></div><button type="button" class="btn sm line" data-act="prEntEdit" data-id="' + esc(e.id) + '">' + ic('edit', 's') + ' Editar</button></div>' +
-      '<div class="row">' + (e.programa ? '<span class="chip">' + esc(e.programa) + '</span>' : '') + (e.colectivo ? '<span class="chip">' + esc(e.colectivo) + '</span>' : '') + (e.activa === false ? '<span class="pill neutral">ya no voy</span>' : '') + '</div>' +
-      (e.proyecto ? '<p class="small" style="white-space:pre-wrap">' + esc(e.proyecto) + '</p>' : '') +
-      dl([['Horario', esc(prHorario(e))], ['Dirección', e.direccion ? esc(e.direccion) + ' · <a href="' + esc(prMaps(e.direccion)) + '" target="_blank" rel="noopener">Cómo llegar ' + ic('ext', 's') + '</a>' : ''], ['Cómo ir', esc(e.transporte || '')],
-        ['Responsable', esc([e.contacto, e.cargo].filter(Boolean).join(' · '))], ['Teléfono', e.tel ? '<a href="tel:' + esc(prTel(e.tel)) + '">' + esc(e.tel) + '</a>' : ''], ['Correo', e.email ? '<a href="mailto:' + esc(e.email) + '">' + esc(e.email) + '</a>' : ''],
-        ['Web', web ? '<a href="' + esc(web) + '" target="_blank" rel="noopener">' + esc(e.web) + '</a>' : ''], ['Notas', e.notas ? '<span style="white-space:pre-wrap">' + esc(e.notas) + '</span>' : '']]) +
-      '<div class="row between"><span class="small muted">' + prH(hh) + ' hechas · ' + plural(l.length, 'sesión', 'sesiones') + '</span><button type="button" class="btn sm" data-act="prNewAt" data-ent="' + esc(e.id) + '">' + ic('plus', 's') + ' Sesión aquí</button></div></section>';
-  }).join('');
-  const none = !ents.length ? '<section class="card stack"><h3>Tu entidad</h3><p class="small">El Departamento de Acción Social te asigna un proyecto en una ONG o institución social para todo el curso. Apunta aquí sus datos: dirección, responsable, teléfono y horario. Así las sesiones nuevas se rellenan solas y tienes a mano a quién avisar si un día no puedes ir.</p><button type="button" class="btn cta" data-act="prEntNew" style="align-self:flex-start">' + ic('plus', 's') + ' Añadir mi entidad</button></section>' : '';
-  const as = '<section class="card stack-s"><div class="card-h"><h3>Acción Social (UFV)</h3><a class="btn sm line" href="' + PR_AS.web + '" target="_blank" rel="noopener">Web ' + ic('ext', 's') + '</a></div>' +
-    dl([['Correo', '<a href="mailto:' + PR_AS.mail + '">' + PR_AS.mail + '</a>'], ['Teléfono', '<a href="tel:' + PR_AS.tel + '">' + PR_AS.telTxt + '</a>'], ['Horario', PR_AS.horario]]) +
-    '<ul class="small" style="margin:4px 0 0;padding-left:18px"><li>25 horas por cuatrimestre, al menos 2 a la semana.</li><li>Si un día no puedes ir: avisa antes a la entidad, justifícalo y recupera las horas.</li><li>La entidad lleva el registro oficial de tus horas; apúntalas tú también para que no haya errores.</li><li>Si te faltan horas, pide a la entidad horas extra.</li></ul><p class="tiny muted">Fuente: web de Acción Social de la UFV (octubre de 2026).</p></section>';
-  const mentor = '<section class="card stack-s"><div class="card-h"><h3>Tu mentor/a</h3><button type="button" class="btn sm line" data-act="prConf">' + ic('edit', 's') + ' Editar</button></div>' + (c.mentor || c.mentorEmail ? dl([['Nombre', esc(c.mentor || '')], ['Correo', c.mentorEmail ? '<a href="mailto:' + esc(c.mentorEmail) + '">' + esc(c.mentorEmail) + '</a>' : '']]) : '<p class="small muted">Las mentorías también tienen que salir APTO. Apunta aquí quién te acompaña.</p>') + '</section>';
-  return '<div class="grid g2">' + cards + none + as + mentor + '</div>' + (ents.length ? '<div class="row" style="margin-top:12px"><button type="button" class="btn line" data-act="prEntNew">' + ic('plus', 's') + ' Otra entidad</button></div>' : '');
-}
-ACT.prEntNew = () => openPrEntForm();
-ACT.prEntEdit = el => openPrEntForm(Store.get('pracEnt', el.dataset.id));
-ACT.prNewAt = el => { const e = prEnt(el.dataset.ent); openPrForm({f: today(), ent: el.dataset.ent, i: e && e.hi, e: e && e.he}); };
-function prDiasHTML(sel, label) {
-  return '<div class="field full"><span class="lab">' + label + '</span><div class="row">' + DIA3.map((d, i) => '<label class="chip btnlike" style="cursor:pointer"><input type="checkbox" class="check" name="dia" value="' + (i + 1) + '"' + ((sel || []).includes(i + 1) ? ' checked' : '') + ' style="width:16px;height:16px"> ' + d + '</label>').join('') + '</div></div>';
-}
-function openPrEntForm(x) {
-  x = x || {}; const isNew = !x.id; const used = prEnts().map(e => e.color);
-  const sec = t => ({type: 'html', full: true, html: '<h4 class="fsec">' + t + '</h4>'});
-  openForm({title: isNew ? 'Añadir entidad' : 'Editar entidad', wide: true,
-    value: Object.assign({activa: true, color: (['#c2410c', '#0f8a94', '#5b3fd6', '#2e8b1f', '#92163d'].find(c => !used.includes(c)) || '#c2410c')}, x),
-    fields: [
-      {k: 'nombre', label: 'Nombre de la entidad', req: true, full: true, ph: 'Fundación…, Asociación…, Residencia…'},
-      {k: 'programa', label: 'Programa', list: PR_PROGRAMAS, ph: 'Instituciones, Unidiversidad, VAS…'},
-      {k: 'colectivo', label: 'Con quién trabajáis', list: PR_COLECTIVOS},
-      {k: 'proyecto', label: 'En qué consiste el proyecto', type: 'textarea', full: true, rows: 3},
-      sec('Contacto'),
-      {k: 'contacto', label: 'Responsable'}, {k: 'cargo', label: 'Cargo', ph: 'Coordinadora de voluntariado…'},
-      {k: 'tel', label: 'Teléfono', type: 'tel'}, {k: 'email', label: 'Correo', type: 'email'},
-      {k: 'web', label: 'Web', type: 'url', full: true, ph: 'https://'},
-      sec('Dónde y cuándo'),
-      {k: 'direccion', label: 'Dirección', full: true},
-      {k: 'transporte', label: 'Cómo llegar', full: true, ph: 'Bus 657 desde la UFV, 25 minutos…'},
-      {k: 'hi', label: 'Hora habitual de inicio', type: 'time'}, {k: 'he', label: 'Hora habitual de fin', type: 'time'},
-      {k: 'color', label: 'Color en el calendario', type: 'color', options: ['#c2410c', '#0f8a94', '#5b3fd6', '#2e8b1f', '#92163d', '#0072f5', '#c98a0b', '#6b7b8a']},
-      {k: 'activa', label: 'Sigo yendo a esta entidad', type: 'check'},
-      {k: 'notas', label: 'Notas', type: 'textarea', full: true, rows: 2},
-    ],
-    extra: prDiasHTML(x.dias, 'Días habituales'),
-    onDelete: isNew ? null : async () => {
-      const n = Store.list('practicas').filter(y => y.ent === x.id).length;
-      if (n && !await ask('Esta entidad tiene ' + plural(n, 'sesión', 'sesiones') + '. Las sesiones no se borran, pero se quedan sin entidad. ¿Borrarla?', {ok: 'Borrar', danger: true})) return false;
-      await delUndo('pracEnt', x.id, 'Entidad');
-    },
-    async onSubmit(v, form) {
-      if (v.hi && v.he && v.he <= v.hi) { toast('La hora de fin tiene que ser después de la de inicio.'); return false; }
-      const dias = $$('input[name="dia"]:checked', form).map(i => +i.value);
-      await Store.put('pracEnt', x.id || null, Object.assign({}, x, v, {dias, creada: x.creada || Date.now()}));
-      toast(isNew ? 'Entidad añadida' : 'Entidad guardada');
-    }});
-}
-
-/* ---------- seguimiento ---------- */
-function prWeekChart(weeks, min) {
-  if (!weeks.length) return '<p class="muted small">Cuando empieces, aquí verás tus horas semana a semana.</p>';
-  const W = 560, H = 170, L = 30, R = 8, T = 12, B = 24;
-  const mx = Math.max(min * 1.6, ...weeks.map(x => x.h), 1), bw = (W - L - R) / weeks.length;
-  const Y = v => T + (H - T - B) * (1 - v / mx);
-  let s = '<div class="chart"><svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Horas de prácticas por semana">';
-  [0, Math.round(mx)].forEach(v => { s += '<line class="gl" x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(v) + '" y2="' + Y(v) + '"/><text x="' + (L - 6) + '" y="' + (Y(v) + 3.5) + '" text-anchor="end">' + v + '</text>'; });
-  weeks.forEach((x, i) => {
-    const x0 = L + i * bw + bw * 0.2, hh = x.h ? Math.max(2, Y(0) - Y(x.h)) : 2;
-    s += '<rect class="' + (x.h >= min ? 'ok' : x.h > 0 ? 'low' : 'zero') + (x.now ? ' now' : '') + '" x="' + x0.toFixed(1) + '" y="' + (Y(0) - hh).toFixed(1) + '" width="' + (bw * 0.6).toFixed(1) + '" height="' + hh.toFixed(1) + '" rx="2"><title>Semana del ' + esc(fD(x.w)) + ': ' + prH(x.h) + '</title></rect>';
-  });
-  s += '<line class="ref" x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(min) + '" y2="' + Y(min) + '"/><text x="' + (W - R) + '" y="' + (Y(min) - 5) + '" text-anchor="end" style="fill:var(--rasp)">mínimo ' + prH(min) + '</text>';
-  const step = Math.max(1, Math.ceil(weeks.length / 8));
-  weeks.forEach((x, i) => { if (i % step === 0 || i === weeks.length - 1) s += '<text x="' + (L + i * bw + bw / 2).toFixed(1) + '" y="' + (H - 7) + '" text-anchor="middle">' + pd(x.w).getDate() + '/' + (pd(x.w).getMonth() + 1) + '</text>'; });
-  return s + '</svg></div>';
-}
-function prPeriodCard(p, s) {
-  const t = today(), pct = p.obj ? clamp(p.h / p.obj, 0, 1) : 0, falta = Math.max(0, p.obj - p.h);
-  let txt;
-  if (t < p.ini) txt = 'Empieza el ' + fD(p.ini) + '.';
-  else if (t > p.fin) txt = falta ? 'Terminó con ' + prH(p.h) + ': faltaron ' + prH(falta) + '. Pide a la entidad horas extra o pregunta en Acción Social por la recuperación.' : '¡Conseguido! ' + prH(p.h) + ' de ' + prH(p.obj) + '.';
-  else if (!falta) txt = '¡Objetivo cumplido! Llevas ' + prH(p.h) + '.';
-  else { const sem = Math.max(1, Math.ceil((diffDays(t, p.fin) + 1) / 7)); txt = 'Te faltan ' + prH(falta) + ' y quedan ' + plural(sem, 'semana', 'semanas') + ' (hasta el ' + fD(p.fin) + '): unas ' + prH(Math.ceil(falta / sem * 4) / 4) + ' a la semana.' + (p.hp ? ' Con lo programado sumarías ' + prH(p.hp) + (p.hp >= falta ? ', así que llegas ✓' : '') + '.' : ''); }
-  return '<section class="card stack-s"><div class="card-h"><h3>' + esc(p.n) + '</h3><span class="small muted">' + esc(fD(p.ini)) + ' – ' + esc(fD(p.fin)) + '</span></div><div class="row between"><b style="font-family:var(--f-display);font-weight:400;font-size:30px">' + prN(p.h) + '<small style="font-size:14px;color:var(--ink-2);font-family:var(--f-ui)"> / ' + prN(p.obj) + ' h</small></b>' + (p.h >= p.obj ? '<span class="pill ok">' + ic('check', 's') + ' cumplido</span>' : '') + '</div><div class="bar" style="--c:var(--cat-practicas);height:10px"><i style="width:' + (pct * 100).toFixed(1) + '%"></i></div><p class="small">' + esc(txt) + '</p>' + (t >= p.ini ? prWeekChart(prWeeks(p), s.minSem) : '') + '</section>';
-}
-function prSegView(s) {
-  const c = prConf(), pasos = c.pasos || {};
-  const p1 = s.pers[0], p2 = s.pers[1];
-  const auto = [['h1', prH(p1.obj) + ' en el primer cuatrimestre', p1.h >= p1.obj], ['h2', prH(p2.obj) + ' en el segundo cuatrimestre', p2.h >= p2.obj]];
-  const steps = PR_PASOS.slice(0, 4).map(p => [p, false]).concat(auto.slice(0, 1).map(a => [a, true]), PR_PASOS.slice(4, 6).map(p => [p, false]), auto.slice(1).map(a => [a, true]), PR_PASOS.slice(6).map(p => [p, false]));
-  const nDone = steps.filter(([p, isAuto]) => isAuto ? p[2] : pasos[p[0]]).length;
-  const check = '<section class="card stack-s"><div class="card-h"><h3>Para sacar el APTO</h3><span class="small muted">' + nDone + ' de ' + steps.length + '</span></div><div class="stack-s">' +
-    steps.map(([p, isAuto]) => isAuto ? '<label class="row-nw small" title="Se marca sola"><input type="checkbox" class="check" disabled' + (p[2] ? ' checked' : '') + '> <span>' + esc(p[1]) + ' <span class="tiny muted">(automático)</span></span></label>' : '<label class="row-nw small" style="align-items:flex-start"><input type="checkbox" class="check" data-chg="prPaso" data-k="' + p[0] + '"' + (pasos[p[0]] ? ' checked' : '') + '> <span>' + esc(p[1]) + (p[2] ? '<br><span class="tiny muted">' + esc(p[2]) + '</span>' : '') + '</span></label>').join('') + '</div></section>';
-  const ent = Store.list('entregas').find(x => x.prMem);
-  const mem = '<section class="card stack-s"><div class="card-h"><h3>Memoria de prácticas</h3><span class="pill neutral">10 % de la nota</span></div><p class="small">La evalúa tu mentor/a. Para escribirla, tu diario es oro: descarga todo lo que has ido apuntando (qué hiciste, con quién y qué te llevas).</p>' +
-    '<p class="small"><b>Entrega:</b> ' + (c.memF ? esc(fLong(c.memF)) + ' (' + esc(rel(c.memF)) + ')' : 'sin fecha todavía') + '</p><div class="row">' +
-    (ent ? '<button type="button" class="btn sm line" data-act="prMemGo">' + ic('box', 's') + ' Ver en Entregas</button>' : '<button type="button" class="btn sm" data-act="prMemAdd">' + ic('box', 's') + ' Añadir a Entregas</button>') + '<button type="button" class="btn sm line" data-act="prConf">' + ic('cal', 's') + ' Poner fecha</button><button type="button" class="btn sm line" data-act="prPdfDiario">' + ic('book', 's') + ' Diario (PDF)</button></div></section>';
-  const falt = '<section class="card stack-s"><div class="card-h"><h3>Faltas y recuperación</h3></div>' + (s.faltas.length ? '<p class="small">' + plural(s.faltas.length, 'falta', 'faltas') + ' (' + prH(prSum(s.faltas)) + ') · ' + plural(s.faltas.filter(x => x.avise).length, 'avisada', 'avisadas') + ' · ' + plural(s.faltas.filter(x => x.justif).length, 'justificada', 'justificadas') + '.</p>' : '<p class="small muted">Ninguna falta. ¡Así se hace!</p>') +
-    (s.porRecuperar ? '<p class="small"><b style="color:var(--err)">Te quedan ' + prH(s.porRecuperar) + ' por recuperar.</b></p><button type="button" class="btn sm" data-act="prRecup" style="align-self:flex-start">' + ic('plus', 's') + ' Programar recuperación</button>' : '') + '<p class="tiny muted">Si faltas, avisa antes a la entidad, justifícalo y recupera las horas. Las sesiones de tipo «Recuperación de horas» se descuentan solas.</p></section>';
-  const byTipo = {}; s.hechas.forEach(x => { const k = PR_TIPO_L[x.tipo] || 'Sesión normal'; byTipo[k] = (byTipo[k] || 0) + prHours(x); });
-  const ents = prEnts(); const byEnt = ents.map(e => ({l: e.nombre, v: prSum(s.hechas.filter(x => x.ent === e.id)), c: e.color})).filter(r => r.v);
-  const stats = '<section class="card stack-s"><div class="card-h"><h3>Tus prácticas en números</h3><button type="button" class="btn sm line" data-act="prConf">' + ic('gear', 's') + ' Objetivos</button></div>' +
-    (s.hechas.length ? hbars((byEnt.length > 1 ? byEnt : Object.entries(byTipo).map(([l, v]) => ({l, v, c: 'var(--cat-practicas)'}))).sort((a, b) => b.v - a.v), {fmt: v => prH(v)}) +
-      '<p class="small" style="margin-top:8px">' + plural(s.hechas.length, 'sesión hecha', 'sesiones hechas') + (s.media ? ' · valoración media ' + fmtN(s.media) + ' de 5' : '') + ' · ' + prH(prSum(s.hechas.filter(x => x.confirmada))) + ' confirmadas por la entidad' + (s.sinConf.length ? ' · <b>' + plural(s.sinConf.length, 'sesión', 'sesiones') + ' sin confirmar</b>' : '') + '.</p>' : '<p class="muted small">Todavía no has registrado sesiones hechas.</p>') + '</section>';
-  return '<div class="grid g2" style="margin-bottom:16px">' + s.pers.map(p => prPeriodCard(p, s)).join('') + '</div><div class="grid g2">' + check + mem + falt + stats + '</div>';
-}
-CHG.prPaso = el => { const c = prConf(); Store.put('pracConf', 'main', Object.assign({}, c, {pasos: Object.assign({}, c.pasos || {}, {[el.dataset.k]: el.checked ? today() : false})})); };
-ACT.prRecup = () => { const me = prMainEnt(); openPrForm({f: today(), tipo: 'recuperacion', estado: 'programada', actividad: 'Recuperación de horas', ent: me ? me.id : '', i: me && me.hi, e: me && me.he}); };
-ACT.prMemGo = () => { const x = Store.list('entregas').find(y => y.prMem); UI.focus = x && x.id; go('entregas'); };
-ACT.prMemAdd = async () => {
-  const c = prConf();
-  const id = await Store.put('entregas', null, {titulo: 'Memoria de prácticas sociales', cod: PR_COD, modo: 'individual', f: c.memF || '', h: '', formato: '', notas: 'La evalúa tu mentor/a: cuenta un 10 % de la nota de Responsabilidad Social. Usa tu diario de prácticas (Prácticas sociales → Registro → Diario en PDF).', pasos: {}, estado: estadoDe({}), creada: Date.now(), prMem: true});
-  if (id) toast(c.memF ? 'Memoria añadida a Entregas' : 'Memoria añadida a Entregas (ponle fecha cuando la sepas)');
-};
-ACT.prConf = () => {
-  const c = prConf(), ps = prPeriods();
-  const sec = t => ({type: 'html', full: true, html: '<h4 class="fsec">' + t + '</h4>'});
-  openForm({title: 'Objetivos y fechas', value: {obj1: ps[0].obj, ini1: ps[0].ini, fin1: ps[0].fin, obj2: ps[1].obj, ini2: ps[1].ini, fin2: ps[1].fin, minSem: prMinSem(), mentor: c.mentor || '', mentorEmail: c.mentorEmail || '', memF: c.memF || ''},
-    fields: [sec('Primer cuatrimestre'), {k: 'obj1', label: 'Horas', type: 'number', min: 0, step: 0.5}, {k: 'ini1', label: 'Desde', type: 'date'}, {k: 'fin1', label: 'Hasta', type: 'date'},
-      sec('Segundo cuatrimestre'), {k: 'obj2', label: 'Horas', type: 'number', min: 0, step: 0.5}, {k: 'ini2', label: 'Desde', type: 'date'}, {k: 'fin2', label: 'Hasta', type: 'date'},
-      sec('Más'), {k: 'minSem', label: 'Mínimo de horas a la semana', type: 'number', min: 0, step: 0.5}, {k: 'memF', label: 'Entrega de la memoria', type: 'date'},
-      {k: 'mentor', label: 'Tu mentor/a'}, {k: 'mentorEmail', label: 'Correo del mentor/a', type: 'email'},
-      {type: 'html', full: true, html: '<p class="tiny muted">Por defecto: 25 h cada cuatrimestre y al menos 2 h a la semana, como indica Acción Social. Cámbialo si tu entidad o tu mentor te dicen otra cosa.</p>'}],
-    async onSubmit(v) {
-      if (v.ini1 && v.fin1 && v.fin1 < v.ini1 || v.ini2 && v.fin2 && v.fin2 < v.ini2) { toast('Revisa las fechas: el final va después del inicio.'); return false; }
-      await Store.put('pracConf', 'main', Object.assign({}, c, v));
-      const en = v.memF && Store.list('entregas').find(x => x.prMem && !x.f); if (en) await Store.patch('entregas', en.id, {f: v.memF});
-      toast('Guardado');
-    }});
-};
-
-/* ---------- ficha de una sesión ---------- */
-function openPrDetail(id) {
-  const x = Store.get('practicas', id); if (!x) return;
-  const e = prEnt(x.ent), p = PR_EST_PILL[x.estado] || PR_EST_PILL.programada, pend = x.estado === 'programada' && prEnded(x);
-  const sec = (t, v) => v ? '<div class="stack-s"><span class="label">' + t + '</span><p style="white-space:pre-wrap;margin:0">' + esc(v) + '</p></div>' : '';
-  const place = x.lugar || (e && e.direccion) || '';
-  const body = '<div class="stack">' +
-    '<div class="row"><span class="pill ' + (pend ? 'warn' : p[0]) + '">' + (pend ? '¿fuiste?' : p[1]) + '</span>' + (x.tipo && x.tipo !== 'sesion' ? '<span class="pill neutral">' + esc(PR_TIPO_L[x.tipo] || x.tipo) + '</span>' : '') + (e ? '<span class="chip dot" style="--c:' + esc(e.color || 'var(--cat-practicas)') + '">' + esc(e.nombre) + '</span>' : '') +
-    (x.estado === 'hecha' ? (x.confirmada ? '<span class="pill ok">en el registro de la entidad</span>' : '<span class="pill warn">sin confirmar con la entidad</span>') : '') + (x.valor ? '<span class="pstars" aria-label="' + x.valor + ' de 5">' + '★'.repeat(x.valor) + '<span style="color:var(--line-2)">' + '★'.repeat(5 - x.valor) + '</span></span>' : '') + '</div>' +
-    '<p style="margin:0"><b>' + esc(fLong(x.f)) + '</b>' + (x.i ? ' · ' + esc(x.i) + (x.e ? '–' + esc(x.e) : '') : '') + ' · ' + prH(prHours(x)) + (x.horas != null && x.horas !== '' ? ' <span class="tiny muted">(fijadas a mano)</span>' : '') + '</p>' +
-    (place ? '<p class="small" style="margin:0">' + ic('place', 's') + ' ' + esc(place) + ' · <a href="' + esc(prMaps(place)) + '" target="_blank" rel="noopener">mapa</a></p>' : '') +
-    sec('Qué hiciste', x.desc) + sec('Con quién estuviste', x.personas) + sec('Responsable ese día', x.responsable) + sec('Compañeros de la UFV', x.companeros) + sec('Qué te llevas', x.aprendi) + sec('Cómo te sentiste', x.senti) + sec('Para la próxima vez', x.proxima) + sec('Notas', x.notas) +
-    (x.estado === 'falte' ? '<p class="small" style="margin:0">' + (x.avise ? 'Avisaste con antelación.' : 'No consta que avisaras.') + ' ' + (x.justif ? 'Falta justificada.' : 'Falta sin justificar.') + '</p>' : '') +
-    (x.foto ? imgTag(x.foto, 'Foto de la sesión').replace('<img', '<img style="width:100%;border-radius:8px"') : '') +
-    ((x.tags || []).length ? '<div class="row">' + x.tags.map(t => '<span class="chip">' + esc(t) + '</span>').join('') + '</div>' : '') +
-    (x.estado === 'hecha' && !x.desc && !x.aprendi ? '<p class="small muted" style="margin:0">Todavía no has contado cómo fue. Pulsa «Editar» y apúntalo ahora que lo tienes fresco.</p>' : '') + '</div>';
-  const foot = '<button type="button" class="btn danger" data-del>' + ic('trash', 's') + ' Borrar</button><button type="button" class="btn ghost" data-dup title="Copia para la semana siguiente">Duplicar</button><span class="sp"></span>' +
-    (x.estado === 'programada' ? '<button type="button" class="btn line" data-nofui>No fui</button><button type="button" class="btn line" data-fui>' + ic('check', 's') + ' Fui</button>' : '') + '<button type="button" class="btn" data-edit>' + ic('edit', 's') + ' Editar</button>';
-  const d = openDlg({title: x.actividad || PR_TIPO_L[x.tipo] || 'Sesión de prácticas', body, foot, wide: true});
-  d.el.querySelector('[data-edit]').onclick = () => { d.close(); openPrForm(Store.get('practicas', id)); };
-  d.el.querySelector('[data-dup]').onclick = () => { d.close(); const c = Object.assign({}, x); ['id', 'desc', 'aprendi', 'senti', 'valor', 'confirmada', 'avise', 'justif', 'foto', 'serie', 'creada', 'upd', 'horas'].forEach(k => delete c[k]); c.f = addDays(x.f, 7); c.estado = 'programada'; openPrForm(c); };
-  const fui = d.el.querySelector('[data-fui]'); if (fui) fui.onclick = () => { d.close(); ACT.prFui({dataset: {id}}); };
-  const nf = d.el.querySelector('[data-nofui]'); if (nf) nf.onclick = () => { d.close(); prMarkMissed(id); };
-  d.el.querySelector('[data-del]').onclick = async () => {
-    const rest = x.serie ? Store.list('practicas').filter(y => y.serie === x.serie && y.id !== x.id && y.estado === 'programada' && y.f >= x.f) : [];
-    if (rest.length) {
-      const q = openDlg({title: 'Borrar sesión', body: '<p>Esta sesión es de una serie. ¿Quieres borrar también las ' + plural(rest.length, 'siguiente programada', 'siguientes programadas') + '?</p>', foot: '<span class="sp"></span><button type="button" class="btn ghost" data-no>Cancelar</button><button type="button" class="btn line" data-one>Solo esta</button><button type="button" class="btn danger" data-all>Esta y las siguientes</button>'});
-      q.el.querySelector('[data-no]').onclick = () => q.close();
-      q.el.querySelector('[data-one]').onclick = async () => { q.close(); d.close(); await delUndo('practicas', id, 'Sesión'); };
-      q.el.querySelector('[data-all]').onclick = async () => { q.close(); d.close(); await Store.del('practicas', id); for (const y of rest) await Store.del('practicas', y.id); toast(plural(rest.length + 1, 'sesión borrada', 'sesiones borradas')); };
-      return;
-    }
-    d.close(); await delUndo('practicas', id, 'Sesión', prev => { if (prev.foto) setTimeout(() => { if (!Store.get('practicas', id)) Files.del(prev.foto); }, 8000); });
-  };
-}
-
-/* ---------- formulario de una sesión ---------- */
-function prClash(f, i, e, selfId) {
-  if (!f || !i) return '';
-  const s = toMin(i), en = e ? toMin(e) : s + 60; const out = [];
-  classesOn(f).forEach(c => { if (toMin(c.i) < en && toMin(c.e) > s) out.push('clase de ' + c.t + ' (' + c.i + '–' + c.e + ')'); });
-  exams().filter(examActive).forEach(x => { if (x.f === f && x.i && toMin(x.i) < en && toMin(x.e || x.i) + (x.e ? 0 : 120) > s) out.push('examen de ' + ((subj(x.cod) || {}).corto || x.titulo) + ' (' + x.i + ')'); });
-  Store.list('practicas').forEach(x => { if (x.id !== selfId && x.f === f && x.estado !== 'cancelada' && x.i && toMin(x.i) < en && toMin(x.e || x.i) > s) out.push('otra sesión de prácticas (' + x.i + ')'); });
-  return out.length ? 'Ojo: ese día tienes ' + out.join(', ') + '.' : '';
-}
-function openPrForm(x, opts = {}) {
-  x = Object.assign({}, x || {}); const isNew = !x.id; const me = prMainEnt(); const ents = prEnts(); const t = today();
-  const ent0 = x.ent !== undefined ? prEnt(x.ent) : me;
-  const v = Object.assign({f: t, tipo: 'sesion', ent: ent0 ? ent0.id : '', i: ent0 && ent0.hi || '', e: ent0 && ent0.he || '', responsable: ent0 && ent0.contacto || ''}, x);
-  if (!v.i && ent0 && ent0.hi) v.i = ent0.hi; if (!v.e && ent0 && ent0.he) v.e = ent0.he;
-  if (!v.estado) v.estado = v.f < t || (v.f === t && v.e && toMin(v.e) <= nowMin()) ? 'hecha' : 'programada';
-  const last = isNew ? Store.list('practicas').filter(y => y.estado === 'hecha' && y.proxima).sort((a, b) => (b.f + (b.i || '')).localeCompare(a.f + (a.i || '')))[0] : null;
-  const allTags = [...new Set(Store.list('practicas').flatMap(y => y.tags || []))];
-  const sec = (k, title) => ({type: 'html', full: true, html: '<h4 class="fsec" data-sec="' + k + '">' + title + '</h4>'});
-  const ONLY = {aprendi: 'hecha', senti: 'hecha', valor: 'hecha', confirmada: 'hecha', avise: 'falte', justif: 'falte'};
-  openForm({title: isNew ? (v.estado === 'hecha' ? 'Registrar sesión de prácticas' : 'Programar sesión de prácticas') : 'Editar sesión', value: v, wide: true, cta: true, submit: 'Guardar',
-    fields: [
-      sec('cuando', 'Cuándo'),
-      {k: 'f', label: 'Fecha', type: 'date', req: true},
-      {k: 'tipo', label: 'Tipo', type: 'select', options: PR_TIPO},
-      {k: 'i', label: 'Empieza', type: 'time'},
-      {k: 'e', label: 'Termina', type: 'time'},
-      {k: 'estado', label: 'Estado', type: 'seg', options: PR_EST, full: true},
-      {k: 'horas', label: 'Horas que cuentan', type: 'number', min: 0, step: 0.25, ph: 'automático', help: 'Se calculan solas con la hora de inicio y fin. Rellénalo solo si la entidad te cuenta otra cosa.'},
-      {type: 'html', full: true, html: '<p class="prinfo" data-info></p>'},
-      sec('donde', 'Dónde y con quién'),
-      {k: 'ent', label: 'Entidad', type: 'select', options: [['', ents.length ? '— Sin entidad —' : '— Todavía no has añadido tu entidad —']].concat(ents.map(e => [e.id, e.nombre + (e.activa === false ? ' (ya no voy)' : '')]))},
-      {k: 'lugar', label: 'Lugar', ph: 'Si no es el de siempre'},
-      {k: 'actividad', label: 'Actividad', full: true, ph: 'Taller de memoria con mayores, apoyo escolar, reparto de alimentos…', list: [...new Set(Store.list('practicas').map(y => y.actividad).filter(Boolean))].slice(0, 30)},
-      {k: 'personas', label: 'Con quién estuviste', full: true, ph: 'Por ejemplo: 8 residentes de la planta 2, un grupo de niños de 3.º de primaria…'},
-      {k: 'responsable', label: 'Responsable ese día'},
-      {k: 'companeros', label: 'Compañeros de la UFV'},
-      sec('detalles', 'Cómo fue'),
-      {k: 'desc', label: 'Qué hiciste', type: 'textarea', full: true, rows: 3},
-      {k: 'aprendi', label: 'Qué te llevas, qué has aprendido', type: 'textarea', full: true, rows: 3, help: 'Esto es lo que más te servirá para la memoria.'},
-      {k: 'senti', label: 'Cómo te has sentido', type: 'textarea', full: true, rows: 2},
-      {k: 'valor', label: 'Valoración', type: 'stars'},
-      {k: 'confirmada', label: 'La entidad ha apuntado estas horas', type: 'check'},
-      {k: 'avise', label: 'Avisé a la entidad con antelación', type: 'check'},
-      {k: 'justif', label: 'La falta está justificada', type: 'check'},
-      {k: 'proxima', label: 'Para la próxima vez', full: true, ph: 'Llevar el material del taller, preguntar por…'},
-      {k: 'foto', label: 'Foto (opcional)', type: 'image', full: true, help: 'Mejor sin caras de las personas a las que acompañas, salvo que tengas su permiso.'},
-      {k: 'tags', label: 'Etiquetas', type: 'tags', full: true, list: allTags},
-      {k: 'notas', label: 'Notas', type: 'textarea', full: true, rows: 2},
-    ],
-    extra: last && last.proxima ? '<p class="full small card tint" style="padding:10px 12px;margin:0">' + ic('pin', 's') + ' La última vez apuntaste para hoy: <b>' + esc(last.proxima) + '</b></p>' : '',
-    after(d, form) { prFormSync(form, ONLY, x.id); },
-    onChange(k, val, form) {
-      if (k === 'ent') { const e = prEnt(val); if (e) { if (!form.elements.i.value && e.hi) form.elements.i.value = e.hi; if (!form.elements.e.value && e.he) form.elements.e.value = e.he; if (!form.elements.responsable.value && e.contacto) form.elements.responsable.value = e.contacto; } }
-      prFormSync(form, ONLY, x.id);
-    },
-    onDelete: isNew ? null : () => delUndo('practicas', x.id, 'Sesión'),
-    async onSubmit(val) {
-      if (val.i && val.e && val.e <= val.i) { toast('La hora de fin tiene que ser después de la de inicio.'); return false; }
-      if (val.estado === 'hecha' && !val.i && (val.horas == null || val.horas === '')) { toast('Pon la hora o las horas que cuentan, para sumarlas.'); return false; }
-      const doc = Object.assign({}, x, val, {creada: x.creada || Date.now()});
-      if (doc.horas == null || doc.horas === '') delete doc.horas;
-      const wasMiss = x.estado === 'falte';
-      const id = await Store.put('practicas', x.id || null, doc); if (!id) return false;
-      toast(isNew ? (doc.estado === 'hecha' ? 'Sesión registrada: ' + prH(prHours(doc)) : doc.estado === 'programada' ? 'Sesión programada' : 'Sesión guardada') : 'Sesión guardada');
-      if (doc.estado === 'falte' && !wasMiss && doc.tipo !== 'recuperacion') setTimeout(async () => { if (await ask('¿Programas ya una sesión para recuperar estas ' + prH(prHours(doc)) + '?', {ok: 'Programar recuperación', cancel: 'Más tarde', title: 'Recuperar horas'})) openPrForm({f: addDays(doc.f, 7) > today() ? addDays(doc.f, 7) : today(), i: doc.i, e: doc.e, ent: doc.ent, tipo: 'recuperacion', estado: 'programada', actividad: 'Recuperación de horas'}); }, 250);
-    }});
-}
-function prFormSync(form, ONLY, selfId) {
-  const est = form.elements.estado.value;
-  Object.entries(ONLY).forEach(([k, st]) => { const el = form.elements[k]; const f = el && el.closest('.field'); if (f) f.hidden = est !== st; });
-  const sd = form.querySelector('[data-sec="detalles"]'); if (sd) sd.textContent = est === 'programada' ? 'Detalles' : est === 'hecha' ? 'Cómo fue' : 'Detalles';
-  const dsc = form.elements.desc; if (dsc) { const lab = dsc.closest('.field').querySelector('label'); if (lab) lab.textContent = est === 'programada' ? 'Qué vas a hacer' : 'Qué hiciste'; }
-  const f = form.elements.f.value, i = form.elements.i.value, e = form.elements.e.value, hv = form.elements.horas.value;
-  const info = form.querySelector('[data-info]'); if (!info) return;
-  const h = hv !== '' ? +String(hv).replace(',', '.') : (i && e && e > i ? (toMin(e) - toMin(i)) / 60 : null);
-  const clash = est === 'cancelada' ? '' : prClash(f, i, e, selfId);
-  info.innerHTML = (h != null && isFinite(h) ? 'Cuentan <b>' + prH(h) + '</b>.' : i && e && e <= i ? '<span class="w">La hora de fin va después de la de inicio.</span>' : 'Pon la hora de inicio y de fin y las horas se calculan solas.') + (clash ? ' <span class="w">' + esc(clash) + '</span>' : '');
-}
-
-/* ---------- programar varias (día fijo cada semana) ---------- */
-function prSerieDates(v, dias) {
-  const out = []; if (!v.desde || !v.hasta || v.hasta < v.desde || !dias.length) return out;
-  const ex = new Set(Store.list('practicas').filter(x => x.estado !== 'cancelada').map(x => x.f + ' ' + (x.i || '')));
-  for (let f = v.desde, n = 0; f <= v.hasta && n < 400; f = addDays(f, 1), n++) {
-    if (!dias.includes(dow(f))) continue;
-    const fe = festivo(f); if (v.skipHol && fe && !fe.dudoso) continue;
-    if (ex.has(f + ' ' + (v.i || ''))) continue;
-    out.push(f);
-  }
-  return out;
-}
-ACT.prSerie = () => {
-  const me = prMainEnt(), s = prStats(), p = s.cur, ents = prEnts();
-  const desde = p && p.ini > today() ? p.ini : today();
-  openForm({title: 'Programar varias sesiones', value: {ent: me ? me.id : '', i: me && me.hi || '17:00', e: me && me.he || '19:00', desde, hasta: p ? p.fin : addDays(today(), 60), skipHol: true, actividad: ''},
-    fields: [{type: 'html', full: true, html: '<p class="small" style="margin:0">Si vas siempre el mismo día y a la misma hora, se crean todas de golpe como «programadas». Después solo tienes que marcar cada una como hecha y contar cómo fue.</p>'},
-      {k: 'ent', label: 'Entidad', type: 'select', options: [['', '— Sin entidad —']].concat(ents.map(e => [e.id, e.nombre]))},
-      {k: 'actividad', label: 'Actividad', ph: 'Opcional'},
-      {k: 'i', label: 'Empieza', type: 'time', req: true}, {k: 'e', label: 'Termina', type: 'time', req: true},
-      {k: 'desde', label: 'Desde', type: 'date', req: true}, {k: 'hasta', label: 'Hasta', type: 'date', req: true},
-      {k: 'skipHol', label: 'Saltar los festivos y vacaciones de la UFV', type: 'check'}],
-    extra: prDiasHTML((me && me.dias && me.dias.length) ? me.dias : [dow(today())], 'Días de la semana') + '<p class="full small prinfo" data-prev></p>',
-    after(d, form) { prSeriePrev(form); },
-    onChange(k, v, form) { if (k === 'ent') { const e = prEnt(v); if (e) { if (e.hi) form.elements.i.value = e.hi; if (e.he) form.elements.e.value = e.he; if (e.dias && e.dias.length) $$('input[name="dia"]', form).forEach(c => { c.checked = e.dias.includes(+c.value); }); } } prSeriePrev(form); },
-    async onSubmit(v, form) {
-      const dias = $$('input[name="dia"]:checked', form).map(c => +c.value);
-      if (v.e <= v.i) { toast('La hora de fin tiene que ser después de la de inicio.'); return false; }
-      const dates = prSerieDates(v, dias);
-      if (!dates.length) { toast('Con esos días y fechas no sale ninguna sesión nueva.'); return false; }
-      if (dates.length > 60) { toast('Son ' + dates.length + ' sesiones: acorta las fechas (máximo 60 de golpe).'); return false; }
-      const serie = uid();
-      for (const f of dates) await Store.put('practicas', null, {f, i: v.i, e: v.e, ent: v.ent, actividad: v.actividad, tipo: 'sesion', estado: 'programada', serie, creada: Date.now()});
-      toast(plural(dates.length, 'sesión programada', 'sesiones programadas') + ' (' + prH(dates.length * (toMin(v.e) - toMin(v.i)) / 60) + ')');
-    }});
-};
-function prSeriePrev(form) {
-  const el = form.querySelector('[data-prev]'); if (!el) return;
-  const v = {i: form.elements.i.value, e: form.elements.e.value, desde: form.elements.desde.value, hasta: form.elements.hasta.value, skipHol: form.elements.skipHol.checked};
-  const dias = $$('input[name="dia"]:checked', form).map(c => +c.value);
-  const dates = prSerieDates(v, dias); const h = v.i && v.e && v.e > v.i ? (toMin(v.e) - toMin(v.i)) / 60 : 0;
-  el.innerHTML = dates.length ? 'Se crearán <b>' + plural(dates.length, 'sesión', 'sesiones') + '</b>' + (h ? ' (' + prH(dates.length * h) + ')' : '') + ': ' + esc(dates.slice(0, 4).map(fD).join(', ')) + (dates.length > 4 ? '…' : '') + '.' : '<span class="w">Con esos días y fechas no sale ninguna sesión nueva.</span>';
-}
-
-/* ---------- PDF: registro de horas y diario ---------- */
-async function prPdfStart(title, sub) {
-  toast('Preparando el PDF…');
-  if (!await loadLib('jspdf') || !await loadLib('autotable')) { toast('No se ha podido cargar el generador de PDF. Revisa la conexión.'); return null; }
-  const {jsPDF} = window.jspdf; const doc = new jsPDF({unit: 'mm', format: 'a4'});
-  doc.setFillColor(0, 26, 51); doc.rect(0, 0, 210, 30, 'F');
-  doc.setTextColor(255, 255, 255); doc.setFont('times', 'normal'); doc.setFontSize(21); doc.text(title, 14, 15);
-  doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.text(sub, 14, 22); doc.text('Generado el ' + fDY(today()), 196, 22, {align: 'right'});
-  return doc;
-}
-function prPdfFoot(doc, txt) { const n = doc.getNumberOfPages(); for (let i = 1; i <= n; i++) { doc.setPage(i); doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(107, 123, 138); doc.text(txt + ' · página ' + i + ' de ' + n, 105, 290, {align: 'center'}); } }
-const prPdfWho = () => D.perfil.nombre + ' · ' + D.perfil.grado + ' · ' + D.perfil.curso + 'º · grupo ' + D.perfil.grupo;
-ACT.prPdfHoras = async () => {
-  const s = prStats(); const ents = prEnts();
-  const doc = await prPdfStart('Prácticas sociales · registro de horas', prPdfWho()); if (!doc) return;
-  let y = 38; doc.setTextColor(0, 26, 51); doc.setFontSize(10);
-  const me = prMainEnt();
-  doc.setFont('helvetica', 'bold'); doc.text('Entidad: ', 14, y); doc.setFont('helvetica', 'normal'); doc.text((ents.map(e => e.nombre).join(' · ') || '—'), 32, y); y += 5.5;
-  if (me && (me.contacto || me.tel)) { doc.text('Responsable: ' + [me.contacto, me.tel, me.email].filter(Boolean).join(' · '), 14, y); y += 5.5; }
-  doc.text('Asignatura: Responsabilidad Social (' + PR_COD + ') · Objetivo: ' + s.pers.map(p => prH(p.obj) + ' en el ' + p.n.toLowerCase()).join(' y '), 14, y); y += 8;
-  const NAVY = [0, 26, 51];
-  s.pers.forEach(p => {
-    const l = s.hechas.filter(x => x.f >= p.ini && x.f <= p.fin).sort(prByDT);
-    if (y > 250) { doc.addPage(); y = 18; }
-    doc.setFont('times', 'normal'); doc.setFontSize(14); doc.setTextColor(...NAVY); doc.text(p.n + ' · ' + prH(p.h) + ' de ' + prH(p.obj), 14, y); doc.setDrawColor(207, 34, 89); doc.setLineWidth(0.6); doc.line(14, y + 2, 32, y + 2); y += 5;
-    doc.autoTable({startY: y, head: [['Fecha', 'Horario', 'Horas', 'Actividad', 'Entidad', 'Confirmada', 'Firma']], body: l.length ? l.map(x => [fDY(x.f), x.i ? x.i + (x.e ? '–' + x.e : '') : '', prN(prHours(x)), (x.actividad || PR_TIPO_L[x.tipo] || '') + (x.tipo === 'recuperacion' && x.actividad !== 'Recuperación de horas' ? ' (recuperación)' : ''), (prEnt(x.ent) || {}).nombre || '', x.confirmada ? 'Sí' : '', '']) : [[{content: 'Sin sesiones hechas en este periodo', colSpan: 7}]],
-      foot: l.length ? [['Total', '', prN(p.h), '', '', '', '']] : undefined,
-      margin: {left: 14, right: 14}, styles: {font: 'helvetica', fontSize: 8.5, cellPadding: 1.8, textColor: NAVY, lineColor: [227, 229, 232], lineWidth: 0.2, minCellHeight: 7}, headStyles: {fillColor: NAVY, textColor: 255}, footStyles: {fillColor: [244, 245, 246], textColor: NAVY, fontStyle: 'bold'},
-      columnStyles: {0: {cellWidth: 23}, 1: {cellWidth: 22}, 2: {cellWidth: 13, halign: 'right'}, 5: {cellWidth: 22}, 6: {cellWidth: 24}}});
-    y = doc.lastAutoTable.finalY + 10;
-  });
-  const fl = s.faltas.sort(prByDT);
-  if (fl.length) { if (y > 250) { doc.addPage(); y = 18; } doc.setFont('times', 'normal'); doc.setFontSize(14); doc.text('Faltas', 14, y); y += 4; doc.autoTable({startY: y, head: [['Fecha', 'Horario', 'Horas', 'Avisé', 'Justificada']], body: fl.map(x => [fDY(x.f), x.i ? x.i + (x.e ? '–' + x.e : '') : '', prN(prHours(x)), x.avise ? 'Sí' : 'No', x.justif ? 'Sí' : 'No']), margin: {left: 14, right: 14}, styles: {font: 'helvetica', fontSize: 8.5, textColor: NAVY}, headStyles: {fillColor: NAVY, textColor: 255}}); y = doc.lastAutoTable.finalY + 8; }
-  doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(107, 123, 138); if (y > 270) { doc.addPage(); y = 18; }
-  doc.text(doc.splitTextToSize('Registro personal de la alumna. El registro oficial de las horas lo lleva la entidad y las prácticas las evalúa el Departamento de Acción Social de la UFV.', 182), 14, y);
-  prPdfFoot(doc, 'Estudio de Carmen · prácticas sociales');
-  if (await saveFile('practicas-sociales-horas-' + today() + '.pdf', doc.output('blob'), 'application/pdf')) toast('Registro de horas listo');
-};
-ACT.prPdfDiario = async () => {
-  const l = Store.list('practicas').filter(x => x.estado === 'hecha').sort(prByDT);
-  if (!l.length) { toast('Todavía no hay sesiones hechas para el diario.'); return; }
-  const doc = await prPdfStart('Diario de prácticas sociales', prPdfWho()); if (!doc) return;
-  const NAVY = [0, 26, 51], GREY = [80, 94, 107]; let y = 40; const W = 182;
-  const need = h => { if (y + h > 280) { doc.addPage(); y = 18; } };
-  const para = (label, txt) => { if (!txt) return; const lines = doc.splitTextToSize(String(txt), W); need(5 + lines.length * 4.6); doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); doc.setTextColor(...GREY); doc.text(label.toUpperCase(), 14, y); y += 4.3; doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(...NAVY); lines.forEach(ln => { need(4.6); doc.text(ln, 14, y); y += 4.6; }); y += 1.5; };
-  l.forEach((x, n) => {
-    const e = prEnt(x.ent); need(26);
-    doc.setDrawColor(207, 34, 89); doc.setLineWidth(0.5); doc.line(14, y - 6, 196, y - 6);
-    doc.setFont('times', 'normal'); doc.setFontSize(13.5); doc.setTextColor(...NAVY); doc.text(doc.splitTextToSize((n + 1) + '. ' + (x.actividad || PR_TIPO_L[x.tipo] || 'Sesión de prácticas'), W)[0], 14, y); y += 5.2;
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(...GREY);
-    doc.text([fLong(x.f), x.i ? x.i + (x.e ? '–' + x.e : '') : '', prH(prHours(x)), e && e.nombre, x.valor ? 'valoración ' + x.valor + '/5' : ''].filter(Boolean).join(' · '), 14, y); y += 6;
-    para('Qué hice', x.desc); para('Con quién', x.personas); para('Qué me llevo', x.aprendi); para('Cómo me sentí', x.senti); para('Notas', x.notas);
-    y += 8;
-  });
-  prPdfFoot(doc, 'Estudio de Carmen · diario de prácticas sociales');
-  if (await saveFile('diario-practicas-sociales-' + today() + '.pdf', doc.output('blob'), 'application/pdf')) toast('Diario listo');
-};
-
-/* ---------- tarjeta para la ficha de Responsabilidad Social ---------- */
-function prSubjectCard() {
-  const s = prStats(), c = s.cur, pct = c.obj ? clamp(c.h / c.obj, 0, 1) : 0;
-  return '<section class="card stack-s" style="border-left:4px solid var(--cat-practicas)"><div class="card-h"><h3>Prácticas sociales</h3><button type="button" class="btn sm" data-act="go" data-v="practicas">Abrir ' + ic('chevR', 's') + '</button></div><p class="small">' + esc(c.n) + ': <b>' + prH(c.h) + '</b> de ' + prH(c.obj) + (s.next ? ' · próxima ' + esc(rel(s.next.f, s.next.i)) : '') + '</p><div class="bar" style="--c:var(--cat-practicas)"><i style="width:' + (pct * 100).toFixed(1) + '%"></i></div></section>';
-}
-
 /* ===================== Asignaturas ===================== */
 UI.as = {tab: 'curso', cuatri: String(cuatriNow()), q: '', solo2: false, sub: 'resumen', conv: 'ord'};
 function slotsOf(cod) { const out = []; ['1', '2'].forEach(c => (D.horario[c] || []).forEach(x => { if (x.cod === cod) out.push(Object.assign({c}, x)); })); return out; }
@@ -2839,7 +2161,6 @@ function resumenTab(s) {
   const links = ov.enlaces || [];
   return '<div class="cols"><div class="stack">' +
     (s.reglas.length ? '<section class="card tint"><div class="card-h"><h3>Lo importante de la guía</h3></div><ul class="prose" style="margin:0;padding-left:18px">' + s.reglas.map(r => '<li>' + esc(r) + '</li>').join('') + '</ul></section>' : '') +
-    (cod === PR_COD ? prSubjectCard() : '') +
     '<section class="card"><div class="card-h"><h3>Exámenes</h3></div>' + (ex.length ? '<div class="list">' + ex.map(e => '<div class="item click" data-act="exGo" data-id="' + e.id + '"><span class="pill ' + (e.f < t ? 'neutral' : URG_PILL[urg(e.f)]) + '">' + esc(e.f < t ? 'hecho' : rel(e.f)) + '</span><div class="grow"><span class="t">' + esc(e.official ? 'Convocatoria ' + e.conv : (e.tipo || 'Examen')) + '</span><span class="m">' + esc(fD(e.f) + ' · ' + e.i + (e.e ? '–' + e.e : '') + ' · ' + (e.aula || '')) + '</span></div>' + (e.notaReal != null ? '<b>' + fmtN(e.notaReal) + '</b>' : '') + '</div>').join('') + '</div>' : '<p class="muted small">Sin exámenes a la vista.</p>') + '</section>' +
     '<section class="card"><div class="card-h"><h3>Entregas</h3><button type="button" class="btn sm ghost" data-act="enSug" data-cod="' + cod + '" data-t="">' + ic('plus', 's') + ' Entrega</button></div>' + (en.length ? '<div class="list">' + en.map(x => '<div class="item click" data-act="enEdit" data-id="' + x.id + '"><span class="pill ' + (x.estado === 'entregada' ? 'info' : x.f ? URG_PILL[urg(x.f)] : 'neutral') + '">' + esc(x.estado === 'entregada' ? 'entregada' : x.f ? rel(x.f) : 'sin fecha') + '</span><div class="grow"><span class="t">' + esc(x.titulo) + '</span></div></div>').join('') + '</div>' : '<p class="muted small">Nada pendiente.</p>') + '</section>' +
     '<section class="card"><div class="card-h"><h3>Tareas</h3><button type="button" class="btn sm ghost" data-act="asTask" data-cod="' + cod + '">' + ic('plus', 's') + ' Tarea</button></div>' + (tk.length ? '<div class="list">' + tk.map(taskRow).join('') + '</div>' : '<p class="muted small">Nada pendiente.</p>') + '</section>' +
@@ -3651,7 +2972,7 @@ VIEWS.ajustes = {
     if (k === 'general') {
       const t = LS.get('estudio-tema', 'auto');
       b = '<div class="grid g2"><section class="card stack"><h3>Tema</h3>' + segBtns('ajTema', t, [['auto', 'Automático'], ['claro', 'Claro'], ['oscuro', 'Oscuro']]) + '<p class="small muted">Automático sigue el modo del móvil u ordenador. Se guarda en este dispositivo.</p><h3>Color principal</h3><div class="swatches" role="group" aria-label="Color principal">' + ACCENTS.map(([k2, l, c]) => '<button type="button" style="--c:' + c + '" data-act="ajAcc" data-v="' + k2 + '" aria-pressed="' + ((aj.acento || 'blue') === k2) + '" aria-label="' + l + '" title="' + l + '"></button>').join('') + '</div></section>' +
-        '<section class="card stack"><h3>Colores del calendario</h3>' + CATS.map(([k2, l]) => '<label class="row between"><span class="chip dot" style="--c:' + CATCOL(k2) + '">' + l + '</span><input type="color" class="color-in" value="' + esc((aj.cats && aj.cats[k2]) || {uni: '#0072f5', examen: '#cf2259', entrega: '#5b3fd6', practicas: '#c2410c', autoescuela: '#237210', personal: '#0f8a94'}[k2]) + '" data-chg="ajCat" data-k="' + k2 + '" aria-label="Color de ' + l + '"></label>').join('') + '<div class="row"><button type="button" class="btn sm line" data-act="ajCatReset">Volver a los colores UFV</button></div><label class="row-nw small"><input type="checkbox" class="check" data-chg="ajClases"' + (aj.ocultarClases ? ' checked' : '') + '> Ocultar las clases del horario en el calendario</label></section>' +
+        '<section class="card stack"><h3>Colores del calendario</h3>' + CATS.map(([k2, l]) => '<label class="row between"><span class="chip dot" style="--c:' + CATCOL(k2) + '">' + l + '</span><input type="color" class="color-in" value="' + esc((aj.cats && aj.cats[k2]) || {uni: '#0072f5', examen: '#cf2259', entrega: '#5b3fd6', autoescuela: '#237210', personal: '#0f8a94'}[k2]) + '" data-chg="ajCat" data-k="' + k2 + '" aria-label="Color de ' + l + '"></label>').join('') + '<div class="row"><button type="button" class="btn sm line" data-act="ajCatReset">Volver a los colores UFV</button></div><label class="row-nw small"><input type="checkbox" class="check" data-chg="ajClases"' + (aj.ocultarClases ? ' checked' : '') + '> Ocultar las clases del horario en el calendario</label></section>' +
         '<section class="card stack-s"><h3>Perfil</h3><p><b>' + esc(p.nombre) + '</b></p><p class="small muted">' + esc(p.grado + ' · ' + p.curso + 'º · grupo ' + p.grupo) + '</p><p class="small muted">' + esc(p.escuela + ' · ' + p.uni) + '</p><p class="small muted">' + esc(p.campus + ' · ' + p.edificio) + '</p></section></div>';
     } else if (k === 'sync') {
       b = Sync.viewHTML();
@@ -3662,8 +2983,8 @@ VIEWS.ajustes = {
         '<section class="card stack"><h3>Avisos por correo</h3><p class="small">En Google Calendar, entra en la configuración del calendario importado → «Notificaciones de eventos» → añade una notificación «por correo» (por ejemplo, 1 día antes). Así te llega un email antes de cada examen y entrega.</p><p class="small">También puedes copiar el resumen de la semana y mandártelo o pasárselo a quien quieras:</p><button type="button" class="btn sm line" data-act="weekText" style="align-self:flex-start">' + ic('copy', 's') + ' Copiar resumen de la semana</button></section></div>';
     } else if (k === 'exportar') {
       const opt = (n, l, on) => '<label class="row-nw small"><input type="checkbox" class="check" name="' + n + '"' + (on ? ' checked' : '') + '> ' + l + '</label>';
-      b = '<div class="grid g2"><section class="card stack" id="pdf-opts"><h3>Exportar a PDF</h3><p class="small muted">Un resumen para imprimir o guardar: elige qué incluir.</p>' + opt('horario', 'Horario del cuatrimestre', true) + opt('examenes', 'Exámenes', true) + opt('tareas', 'Tareas pendientes', true) + opt('entregas', 'Entregas', true) + opt('notas', 'Notas por asignatura', false) + opt('practicas', 'Prácticas sociales (horas)', false) + opt('auto', 'Autoescuela', false) + '<button type="button" class="btn" data-act="pdf" style="align-self:flex-start">' + ic('dl', 's') + ' Descargar PDF</button></section>' +
-        '<section class="card stack" id="ics-opts"><h3>Google Calendar</h3><p class="small muted">Descarga un archivo de calendario con lo que elijas e impórtalo en Google Calendar.</p>' + opt('clases', 'Clases del curso (los dos cuatrimestres)', true) + opt('examenes', 'Exámenes', true) + opt('entregas', 'Entregas con fecha', true) + opt('practicas', 'Prácticas sociales', true) + opt('auto', 'Autoescuela', true) + opt('eventos', 'Mis eventos', true) + opt('fechas', 'Cumpleaños y fechas', true) + '<button type="button" class="btn" data-act="ics" style="align-self:flex-start">' + ic('cal', 's') + ' Descargar calendario' + (BUILD === 'artifact' ? ' (.zip)' : ' (.ics)') + '</button><details data-k="ics-help" class="small"><summary style="cursor:pointer;font-weight:700">Cómo importarlo</summary><ol style="margin:6px 0 0;padding-left:18px">' + (BUILD === 'artifact' ? '<li>Descomprime el .zip: dentro está «calendario-carmen.ics».</li>' : '') + '<li>Abre calendar.google.com en el ordenador.</li><li>Crea un calendario nuevo (por ejemplo «UFV») para poder borrarlo entero si hace falta.</li><li>Configuración → Importar y exportar → Importar → elige el archivo y ese calendario.</li><li>En la configuración de ese calendario, pon las notificaciones que quieras (al móvil y por correo).</li></ol><p style="margin-top:6px">Si cambias algo aquí, vuelve a exportar e importa en un calendario limpio para no duplicar.</p></details><p class="tiny muted">Para un solo evento, ábrelo en el calendario de la app y pulsa «Google Calendar».</p></section></div>';
+      b = '<div class="grid g2"><section class="card stack" id="pdf-opts"><h3>Exportar a PDF</h3><p class="small muted">Un resumen para imprimir o guardar: elige qué incluir.</p>' + opt('horario', 'Horario del cuatrimestre', true) + opt('examenes', 'Exámenes', true) + opt('tareas', 'Tareas pendientes', true) + opt('entregas', 'Entregas', true) + opt('notas', 'Notas por asignatura', false) + opt('auto', 'Autoescuela', false) + '<button type="button" class="btn" data-act="pdf" style="align-self:flex-start">' + ic('dl', 's') + ' Descargar PDF</button></section>' +
+        '<section class="card stack" id="ics-opts"><h3>Google Calendar</h3><p class="small muted">Descarga un archivo de calendario con lo que elijas e impórtalo en Google Calendar.</p>' + opt('clases', 'Clases del curso (los dos cuatrimestres)', true) + opt('examenes', 'Exámenes', true) + opt('entregas', 'Entregas con fecha', true) + opt('auto', 'Autoescuela', true) + opt('eventos', 'Mis eventos', true) + opt('fechas', 'Cumpleaños y fechas', true) + '<button type="button" class="btn" data-act="ics" style="align-self:flex-start">' + ic('cal', 's') + ' Descargar calendario' + (BUILD === 'artifact' ? ' (.zip)' : ' (.ics)') + '</button><details data-k="ics-help" class="small"><summary style="cursor:pointer;font-weight:700">Cómo importarlo</summary><ol style="margin:6px 0 0;padding-left:18px">' + (BUILD === 'artifact' ? '<li>Descomprime el .zip: dentro está «calendario-carmen.ics».</li>' : '') + '<li>Abre calendar.google.com en el ordenador.</li><li>Crea un calendario nuevo (por ejemplo «UFV») para poder borrarlo entero si hace falta.</li><li>Configuración → Importar y exportar → Importar → elige el archivo y ese calendario.</li><li>En la configuración de ese calendario, pon las notificaciones que quieras (al móvil y por correo).</li></ol><p style="margin-top:6px">Si cambias algo aquí, vuelve a exportar e importa en un calendario limpio para no duplicar.</p></details><p class="tiny muted">Para un solo evento, ábrelo en el calendario de la app y pulsa «Google Calendar».</p></section></div>';
     } else if (k === 'datos') {
       const n = COLS.reduce((a, c) => a + Store.list(c).length, 0);
       b = '<div class="grid g2"><section class="card stack"><h3>Copia de seguridad</h3><p class="small">Tienes ' + n + ' elementos guardados ' + (Store.mode === 'artifact' ? 'en esta página de Claude' : 'en este dispositivo' + (Sync.active() ? ' (y sincronizados con GitHub)' : '')) + '. Descarga una copia de vez en cuando; sirve también para pasar tus datos entre la versión de Claude y la instalable.</p><label class="row-nw small"><input type="checkbox" class="check" id="bk-img" checked> Incluir fotos y archivos (ocupa más)</label><button type="button" class="btn" data-act="backup" style="align-self:flex-start">' + ic('dl', 's') + ' Descargar copia (.json)</button></section>' +
@@ -3719,7 +3040,6 @@ ACT.pdf = async () => {
   if (sel.tareas) { title('Tareas pendientes'); table(['Fecha', 'Tarea', 'Asignatura', 'Prioridad'], Store.list('tareas').filter(x => x.estado !== 'hecha').sort(sortTasks).map(x => [x.f ? fDY(x.f) : '—', x.titulo + ((x.subs || []).length ? ' (' + x.subs.filter(s => s.d).length + '/' + x.subs.length + ')' : ''), (subj(x.cod) || {}).corto || '', x.prio || 'media'])); }
   if (sel.entregas) { title('Entregas'); table(['Fecha', 'Entrega', 'Asignatura', 'Estado', 'Pasos'], Store.list('entregas').filter(x => x.estado !== 'confirmada').sort((a, b) => (a.f || '9').localeCompare(b.f || '9')).map(x => [x.f ? fDY(x.f) + (x.h ? ' ' + x.h : '') : '—', x.titulo, (subj(x.cod) || {}).corto || '', x.estado || 'pendiente', PASOS.filter(([k]) => (x.pasos || {})[k]).length + '/5'])); }
   if (sel.notas) { title('Notas por asignatura'); table(['Asignatura', 'ECTS', 'Vas con', 'Nota final', 'Faltas'], mySubjects().map(s => { const g = gradeOf(s, 'ord'); const f = finalGrade(s); const fi = faltasInfo(s.cod); return [s.n, s.ects || '', g.cur != null ? fmtN(g.cur, 2) : '—', f != null ? fmtN(f, 2) : '—', fi.fs.filter(x => !x.just).length + ' de ' + fi.lim]; })); }
-  if (sel.practicas) { const ps = prStats(); title('Prácticas sociales'); doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.setTextColor(0, 26, 51); doc.text(ps.pers.map(p => p.n + ': ' + prH(p.h) + ' de ' + prH(p.obj)).join(' · ') + (ps.porRecuperar ? ' · por recuperar: ' + prH(ps.porRecuperar) : ''), M, y); y += 6; table(['Fecha', 'Horario', 'Horas', 'Actividad', 'Estado'], Store.list('practicas').filter(x => x.estado !== 'cancelada').sort(prByDT).map(x => [fDY(x.f), x.i ? x.i + (x.e ? '–' + x.e : '') : '', prN(prHours(x)), x.actividad || PR_TIPO_L[x.tipo] || '', (PR_EST_PILL[x.estado] || [])[1] + (x.confirmada ? ' · confirmada' : '')])); }
   if (sel.auto) { const st = autoStats(); const c = autoConf(); title('Autoescuela'); doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.setTextColor(0, 26, 51); doc.text('Clases hechas: ' + st.hechas.length + ' · pagadas: ' + st.pagadas.length + ' · sin pagar: ' + st.sinPagar.length + ' · teórico: ' + (c.okT ? 'aprobado' : c.fT ? fDY(c.fT) : 'sin fecha') + ' · práctico: ' + (c.okP ? 'aprobado' : c.fP ? fDY(c.fP) : 'sin fecha'), M, y); y += 6; table(['Fecha', 'Hora', 'Estado', 'Qué trabajaste'], Store.list('autoClases').sort((a, b) => (b.f + (b.h || '')).localeCompare(a.f + (a.h || ''))).slice(0, 30).map(x => [fDY(x.f), x.h || '', x.estado + (x.pagada ? ' · pagada' : ''), x.trab || ''])); }
   const n = doc.getNumberOfPages(); for (let i = 1; i <= n; i++) { doc.setPage(i); doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(107, 123, 138); doc.text('Estudio de Carmen · no es un documento oficial de la UFV · página ' + i + ' de ' + n, W / 2, 290, {align: 'center'}); }
   const ok = await saveFile('estudio-carmen-' + today() + '.pdf', doc.output('blob'), 'application/pdf');
@@ -3746,7 +3066,6 @@ function icsText(sel) {
   if (sel.clases) for (let f = from; f <= to; f = addDays(f, 1)) classesOn(f).forEach(c => ev(c.id, c.t, f, c.i, c.e, c.sub ? 'Aula ' + c.sub + ' · UFV' : 'UFV', (subj(c.cod) || {}).n));
   if (sel.examenes) exams().filter(examActive).forEach(x => ev(x.id, 'Examen · ' + ((subj(x.cod) || {}).n || x.titulo), x.f, x.i, x.e, x.aula, 'Convocatoria ' + (x.conv || 'propia'), '-P1D'));
   if (sel.entregas) Store.list('entregas').filter(x => x.f && x.estado !== 'confirmada').forEach(x => ev(x.id, 'Entrega · ' + x.titulo, x.f, x.h, x.h ? fromMin(Math.min(toMin(x.h) + 30, 1439)) : '', '', x.formato || '', x.h ? '-PT3H' : '-P1D'));
-  if (sel.practicas) Store.list('practicas').filter(x => x.estado === 'programada' || x.estado === 'hecha').forEach(x => { const en = prEnt(x.ent); ev('pr-' + x.id, 'Prácticas sociales' + (en ? ' · ' + en.nombre : ''), x.f, x.i, x.i ? (x.e || fromMin(Math.min(toMin(x.i) + 120, 1439))) : '', x.lugar || (en && en.direccion) || '', [x.actividad, en && en.contacto ? 'Responsable: ' + en.contacto + (en.tel ? ' (' + en.tel + ')' : '') : ''].filter(Boolean).join('\n'), x.estado === 'programada' && x.i ? '-PT1H' : ''); });
   if (sel.auto) { Store.list('autoClases').filter(x => x.estado !== 'cancelada').forEach(x => ev(x.id, 'Autoescuela' + (x.prof ? ' · ' + x.prof : ''), x.f, x.h, x.h ? fromMin(Math.min(toMin(x.h) + (+x.dur || 45), 1439)) : '', '', x.trab || '', '-PT1H')); const c = autoConf(); if (c.fT) ev('ax-fT', 'Examen teórico DGT', c.fT, c.fTh, '', '', '', '-P1D'); if (c.fP) ev('ax-fP', 'Examen práctico DGT', c.fP, c.fPh, '', '', '', '-P1D'); }
   if (sel.eventos) { const a = today(), b = addDays(a, 365); Store.list('eventos').forEach(x => expandRep(x, x.rep && x.rep.freq ? a : x.f, x.rep && x.rep.freq ? b : x.f).forEach(f => ev(x.id + '-' + f, x.titulo, f, x.allDay ? '' : x.i, x.allDay ? '' : x.e, x.lugar, x.notas, ''))); }
   if (sel.fechas) Store.list('fechas').filter(x => x.md).forEach(x => { const y = +today().slice(0, 4); let f = y + '-' + x.md; if (f < today()) f = (y + 1) + '-' + x.md; ev(x.id, (x.tipo === 'cumple' ? 'Cumpleaños de ' : '') + x.nombre, f, '', '', '', x.regalo ? 'Idea de regalo: ' + x.regalo : '', '-P1D', ['RRULE:FREQ=YEARLY']); });

@@ -1,6 +1,6 @@
 # Estudio de Carmen (versión instalable)
 
-Planificador de 2º de Arquitectura (UFV): calendario y horario de 2ºB, exámenes, tareas, entregas, prácticas sociales (con su propio calendario y registro de horas), correcciones, asignaturas con sus guías docentes, objetivos, autoescuela, notas, referencias y herramientas de estudio.
+Planificador de 2º de Arquitectura (UFV): calendario y horario de 2ºB, exámenes, tareas, entregas, correcciones, asignaturas con sus guías docentes, objetivos, autoescuela, notas, referencias y herramientas de estudio.
 
 ## Subirla gratis a GitHub Pages (unos 3 minutos)
 1. Entra en github.com con tu cuenta y pulsa **New repository**. Ponle un nombre que no diga quién eres (por ejemplo `estudio`), márcalo **Public** y créalo.
