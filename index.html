@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Estudio de Carmen</title>
 <meta name="description" content="Planificador de estudios: 2º de Arquitectura en la UFV.">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob:; connect-src 'self' data: blob:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob:; media-src 'self' blob: mediastream:; connect-src 'self' data: blob: https://api.github.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="robots" content="noindex, nofollow, noarchive">
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
@@ -541,6 +541,27 @@ table.tbl td.r,table.tbl th.r{text-align:right;font-variant-numeric:tabular-nums
 }
 @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
 
+/* ---------- sincronización ---------- */
+.status[data-act]{cursor:pointer;border-radius:99px;padding:3px 8px;margin:-3px -4px}
+.status[data-act]:hover{background:var(--surface-3)}
+.status.sync i{background:var(--blue);animation:spulse .9s ease-in-out infinite alternate}
+@keyframes spulse{to{opacity:.3;transform:scale(.75)}}
+@media (prefers-reduced-motion:reduce){.status.sync i{animation:none}}
+.status.big{font-size:13.5px;font-weight:700;color:var(--ink);cursor:default}
+.status.big span{display:inline}
+.status.big i{width:10px;height:10px}
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+.err-t{color:var(--err);font-weight:600;margin:0}
+.qr{background:#fff;border:1px solid var(--line);border-radius:var(--r-m);padding:10px;line-height:0;align-self:flex-start}
+.qr svg{width:min(250px,64vw);height:auto;display:block}
+.steps{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px;line-height:1.55}
+.steps ul{margin:4px 0;padding-left:18px}
+.sync-tab code{font:600 12px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--surface-3);border:1px solid var(--line);border-radius:4px;padding:0 4px;white-space:nowrap}
+.scan{position:relative;border-radius:var(--r-m);overflow:hidden;background:#000;aspect-ratio:1/1;width:100%;max-height:60vh}
+.scan video{width:100%;height:100%;object-fit:cover;display:block}
+.scan i{position:absolute;inset:15%;border:3px solid rgba(255,255,255,.92);border-radius:18px;box-shadow:0 0 0 100vmax rgba(0,0,0,.35);pointer-events:none}
+img[data-ref^="l:"]:not([src]){min-height:90px;min-width:90px;background:var(--surface-3)}
+
 </style>
 </head>
 <body>
@@ -800,14 +821,13 @@ function initLocal() {
   COLS.forEach(k => Store.loaded[k] = true);
   Store.mode = ok ? 'local' : 'memory'; Store.canWrite = true;
   if (!ok) Store.note = 'Este navegador no deja guardar datos (¿modo privado?). Lo que hagas se perderá al cerrar.';
-  let t = null;
   const persist = () => {
     if (!ok) return true;
     const out = {};
     COLS.forEach(c => { out[c] = {}; Object.entries(Store.data[c]).forEach(([id, d]) => { const x = Object.assign({}, d); delete x.id; out[c][id] = x; }); });
     try { localStorage.setItem(LKEY, JSON.stringify(out)); return true; } catch (e) { return false; }
   };
-  Adapter.write = () => new Promise((res, rej) => { clearTimeout(t); t = setTimeout(() => {}, 0); persist() ? res() : rej({code: 'quota_exceeded'}); });
+  Adapter.write = (col, id, doc) => new Promise((res, rej) => { if (!persist()) { rej({code: 'quota_exceeded'}); return; } Sync.noteWrite(col, id, doc); res(); });
   window.addEventListener('storage', e => { if (e.key === LKEY && e.newValue) { try { const s = JSON.parse(e.newValue); COLS.forEach(c => { Store.data[c] = {}; Object.entries(s[c] || {}).forEach(([id, d]) => { Store.data[c][id] = Object.assign({}, d, {id}); }); }); scheduleRender(); } catch (_) {} } });
   Store._persist = persist;
 }
@@ -864,7 +884,7 @@ const Files = {
   async blob(ref) {
     if (!ref) return null;
     try {
-      if (ref.startsWith('l:')) return await IDB.get(ref.slice(2));
+      if (ref.startsWith('l:')) return (await IDB.get(ref.slice(2))) || (BUILD === 'web' ? await Sync.fetchFile(ref.slice(2)) : null);
       const r = await fetch(this.src(ref)); return r.ok ? await r.blob() : null;
     } catch (e) { return null; }
   },
@@ -872,7 +892,7 @@ const Files = {
 function hydrateFiles(root = document) {
   $$('[data-ref^="l:"]', root).forEach(async el => {
     const id = el.dataset.ref.slice(2);
-    if (!blobCache.has(id)) { try { const b = await IDB.get(id); if (b) blobCache.set(id, URL.createObjectURL(b)); } catch (e) {} }
+    if (!blobCache.has(id)) { try { let b = await IDB.get(id); if (!b && BUILD === 'web') b = await Sync.fetchFile(id); if (b && !blobCache.has(id)) blobCache.set(id, URL.createObjectURL(b)); } catch (e) {} }
     const u = blobCache.get(id); if (!u) return;
     if (el.tagName === 'IMG') { if (el.src !== u) el.src = u; } else if (el.tagName === 'A') el.href = u;
   });
@@ -896,12 +916,15 @@ const LIBS = {
   jspdf: ['vendor/jspdf.umd.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js', () => window.jspdf],
   autotable: ['vendor/jspdf.plugin.autotable.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js', () => window.jspdf && window.jspdf.jsPDF && window.jspdf.jsPDF.API.autoTable],
   jszip: ['vendor/jszip.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js', () => window.JSZip],
+  qrcode: ['vendor/qrcode.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js', () => window.qrcode],
+  jsqr: ['vendor/jsQR.min.js', '', () => window.jsQR],
+  fflate: ['vendor/fflate.min.js', '', () => window.fflate],
 };
 function loadScript(src) { return new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); }); }
 async function loadLib(name) {
   const [local, cdn, ready] = LIBS[name];
   if (ready()) return true;
-  const order = BUILD === 'artifact' ? [cdn] : [local, cdn];
+  const order = (BUILD === 'artifact' ? [cdn] : [local, cdn]).filter(Boolean);
   for (const src of order) { try { await loadScript(src); if (ready()) return true; } catch (e) {} }
   return !!ready();
 }
@@ -1213,9 +1236,15 @@ function renderChrome() {
   if (bell) { bell.innerHTML = ic('bell') + (al.length ? '<span class="bdot" style="position:absolute;top:2px;right:2px;background:var(--rasp);color:#fff;border-radius:99px;font-size:9.5px;padding:0 5px;font-weight:700">' + al.length + '</span>' : ''); bell.setAttribute('aria-label', 'Avisos: ' + al.length); }
   const st = $('#status');
   if (st) {
-    const m = {artifact: ['', 'Guardado en Claude'], local: ['', 'Guardado en este dispositivo'], memory: ['warn', 'Sin guardar'], readonly: ['warn', 'Solo lectura'], offline: ['err', 'Sin conexión con tus datos'], loading: ['warn', 'Cargando…']}[Store.mode] || ['', ''];
-    const loading = Store.mode === 'artifact' && COLS.some(k => !Store.loaded[k]);
-    st.className = 'status ' + (loading ? 'warn' : m[0]); st.innerHTML = '<i></i><span>' + (loading ? 'Cargando tus datos…' : m[1]) + '</span>';
+    const si = Sync.status();
+    if (si) { st.className = 'status ' + si[0]; st.innerHTML = '<i></i><span>' + esc(si[1]) + '</span>'; st.title = si[2] || si[1]; }
+    else {
+      const m = {artifact: ['', 'Guardado en Claude'], local: ['', 'Guardado en este dispositivo'], memory: ['warn', 'Sin guardar'], readonly: ['warn', 'Solo lectura'], offline: ['err', 'Sin conexión con tus datos'], loading: ['warn', 'Cargando…']}[Store.mode] || ['', ''];
+      const loading = Store.mode === 'artifact' && COLS.some(k => !Store.loaded[k]);
+      st.className = 'status ' + (loading ? 'warn' : m[0]); st.innerHTML = '<i></i><span>' + (loading ? 'Cargando tus datos…' : m[1]) + '</span>';
+      st.title = BUILD === 'web' && Store.mode === 'local' ? 'Solo en este dispositivo. Pulsa para activar la sincronización.' : '';
+    }
+    if (BUILD === 'web') st.dataset.act = 'syncOpen';
   }
   const ban = $('#banner');
   if (ban) {
@@ -1223,7 +1252,8 @@ function renderChrome() {
     if (Store.mode === 'offline') h = '<div class="banner err">' + ic('shield') + '<div><b>Tus datos no se pueden cargar aquí.</b> Abre esta página en Claude con tu sesión iniciada y permiso de edición, o usa la versión instalable para el móvil. Mientras tanto ves el horario, los exámenes y las guías.</div></div>';
     else if (Store.mode === 'readonly') h = '<div class="banner warn">' + ic('shield') + '<div><b>Estás viendo una copia de solo lectura.</b> Para apuntar cosas necesitas permiso de edición en esta página o usar la versión instalable.</div></div>';
     if (Store.note) h += '<div class="banner warn">' + ic('bell') + '<div>' + esc(Store.note) + '</div></div>';
-    ban.innerHTML = h;
+    h += Sync.banner();
+    if (ban._h !== h) { ban._h = h; ban.innerHTML = h; }
   }
   const fab = $('#fab'); const v = VIEWS[UI.view];
   if (fab) { fab.hidden = !(v && v.fab); fab.setAttribute('aria-label', v && v.fabLabel || 'Añadir'); }
@@ -2935,7 +2965,8 @@ function applyLook() { applyTheme(); applyColors(true); }
 VIEWS.ajustes = {
   render() {
     const head = pageHead('Ajustes', 'Ajustes y exportar', '', '');
-    const tabs = subtabs('ajTab', UI.ajTab, [['general', 'Aspecto'], ['avisos', 'Avisos'], ['exportar', 'PDF y Google Calendar'], ['datos', 'Copia de seguridad'], ['instalar', 'Instalar en el móvil'], ['acerca', 'Acerca de']]);
+    if (UI.ajTab === 'sync' && BUILD !== 'web') UI.ajTab = 'general';
+    const tabs = subtabs('ajTab', UI.ajTab, [['general', 'Aspecto']].concat(BUILD === 'web' ? [['sync', 'Sincronizar']] : [], [['avisos', 'Avisos'], ['exportar', 'PDF y Google Calendar'], ['datos', 'Copia de seguridad'], ['instalar', 'Instalar en el móvil'], ['acerca', 'Acerca de']]));
     const k = UI.ajTab; let b = '';
     const aj = Store.aj(); const p = D.perfil;
     if (k === 'general') {
@@ -2943,6 +2974,8 @@ VIEWS.ajustes = {
       b = '<div class="grid g2"><section class="card stack"><h3>Tema</h3>' + segBtns('ajTema', t, [['auto', 'Automático'], ['claro', 'Claro'], ['oscuro', 'Oscuro']]) + '<p class="small muted">Automático sigue el modo del móvil u ordenador. Se guarda en este dispositivo.</p><h3>Color principal</h3><div class="swatches" role="group" aria-label="Color principal">' + ACCENTS.map(([k2, l, c]) => '<button type="button" style="--c:' + c + '" data-act="ajAcc" data-v="' + k2 + '" aria-pressed="' + ((aj.acento || 'blue') === k2) + '" aria-label="' + l + '" title="' + l + '"></button>').join('') + '</div></section>' +
         '<section class="card stack"><h3>Colores del calendario</h3>' + CATS.map(([k2, l]) => '<label class="row between"><span class="chip dot" style="--c:' + CATCOL(k2) + '">' + l + '</span><input type="color" class="color-in" value="' + esc((aj.cats && aj.cats[k2]) || {uni: '#0072f5', examen: '#cf2259', entrega: '#5b3fd6', autoescuela: '#237210', personal: '#0f8a94'}[k2]) + '" data-chg="ajCat" data-k="' + k2 + '" aria-label="Color de ' + l + '"></label>').join('') + '<div class="row"><button type="button" class="btn sm line" data-act="ajCatReset">Volver a los colores UFV</button></div><label class="row-nw small"><input type="checkbox" class="check" data-chg="ajClases"' + (aj.ocultarClases ? ' checked' : '') + '> Ocultar las clases del horario en el calendario</label></section>' +
         '<section class="card stack-s"><h3>Perfil</h3><p><b>' + esc(p.nombre) + '</b></p><p class="small muted">' + esc(p.grado + ' · ' + p.curso + 'º · grupo ' + p.grupo) + '</p><p class="small muted">' + esc(p.escuela + ' · ' + p.uni) + '</p><p class="small muted">' + esc(p.campus + ' · ' + p.edificio) + '</p></section></div>';
+    } else if (k === 'sync') {
+      b = Sync.viewHTML();
     } else if (k === 'avisos') {
       const perm = typeof Notification !== 'undefined' ? Notification.permission : 'unsupported';
       b = '<div class="grid g2"><section class="card stack"><h3>Avisos dentro de la app</h3><p class="small">La campana de arriba y la barra azul de Inicio te avisan de: exámenes de las próximas dos semanas, entregas en 3 días o menos, tareas atrasadas, recordatorios, trámites con plazo cercano, clases de autoescuela y cumpleaños de la semana.</p><button type="button" class="btn sm line" data-act="bell" style="align-self:flex-start">' + ic('bell', 's') + ' Ver avisos ahora</button></section>' +
@@ -2954,11 +2987,11 @@ VIEWS.ajustes = {
         '<section class="card stack" id="ics-opts"><h3>Google Calendar</h3><p class="small muted">Descarga un archivo de calendario con lo que elijas e impórtalo en Google Calendar.</p>' + opt('clases', 'Clases del curso (los dos cuatrimestres)', true) + opt('examenes', 'Exámenes', true) + opt('entregas', 'Entregas con fecha', true) + opt('auto', 'Autoescuela', true) + opt('eventos', 'Mis eventos', true) + opt('fechas', 'Cumpleaños y fechas', true) + '<button type="button" class="btn" data-act="ics" style="align-self:flex-start">' + ic('cal', 's') + ' Descargar calendario' + (BUILD === 'artifact' ? ' (.zip)' : ' (.ics)') + '</button><details data-k="ics-help" class="small"><summary style="cursor:pointer;font-weight:700">Cómo importarlo</summary><ol style="margin:6px 0 0;padding-left:18px">' + (BUILD === 'artifact' ? '<li>Descomprime el .zip: dentro está «calendario-carmen.ics».</li>' : '') + '<li>Abre calendar.google.com en el ordenador.</li><li>Crea un calendario nuevo (por ejemplo «UFV») para poder borrarlo entero si hace falta.</li><li>Configuración → Importar y exportar → Importar → elige el archivo y ese calendario.</li><li>En la configuración de ese calendario, pon las notificaciones que quieras (al móvil y por correo).</li></ol><p style="margin-top:6px">Si cambias algo aquí, vuelve a exportar e importa en un calendario limpio para no duplicar.</p></details><p class="tiny muted">Para un solo evento, ábrelo en el calendario de la app y pulsa «Google Calendar».</p></section></div>';
     } else if (k === 'datos') {
       const n = COLS.reduce((a, c) => a + Store.list(c).length, 0);
-      b = '<div class="grid g2"><section class="card stack"><h3>Copia de seguridad</h3><p class="small">Tienes ' + n + ' elementos guardados ' + (Store.mode === 'artifact' ? 'en esta página de Claude' : 'en este dispositivo') + '. Descarga una copia de vez en cuando; sirve también para pasar tus datos entre la versión de Claude y la instalable.</p><label class="row-nw small"><input type="checkbox" class="check" id="bk-img" checked> Incluir fotos y archivos (ocupa más)</label><button type="button" class="btn" data-act="backup" style="align-self:flex-start">' + ic('dl', 's') + ' Descargar copia (.json)</button></section>' +
+      b = '<div class="grid g2"><section class="card stack"><h3>Copia de seguridad</h3><p class="small">Tienes ' + n + ' elementos guardados ' + (Store.mode === 'artifact' ? 'en esta página de Claude' : 'en este dispositivo' + (Sync.active() ? ' (y sincronizados con GitHub)' : '')) + '. Descarga una copia de vez en cuando; sirve también para pasar tus datos entre la versión de Claude y la instalable.</p><label class="row-nw small"><input type="checkbox" class="check" id="bk-img" checked> Incluir fotos y archivos (ocupa más)</label><button type="button" class="btn" data-act="backup" style="align-self:flex-start">' + ic('dl', 's') + ' Descargar copia (.json)</button></section>' +
         '<section class="card stack"><h3>Restaurar</h3><p class="small">Carga una copia descargada antes. Puedes juntarla con lo que ya tienes o sustituirlo todo.</p><label class="btn line" style="align-self:flex-start">' + ic('up', 's') + ' Elegir copia<input type="file" accept="application/json,.json" hidden data-chg="restore"></label></section>' +
         '<section class="card stack"><h3>Borrar todo</h3><p class="small">Borra todas tus tareas, notas, fotos y demás datos de ' + (Store.mode === 'artifact' ? 'esta página' : 'este dispositivo') + '. El horario, los exámenes oficiales y las guías siguen ahí.</p><button type="button" class="btn danger" data-act="wipe" style="align-self:flex-start">' + ic('trash', 's') + ' Borrar todos mis datos</button></section></div>';
     } else if (k === 'instalar') {
-      b = BUILD === 'web' ? '<div class="grid g2"><section class="card stack"><h3>iPhone (Safari)</h3><ol class="small" style="margin:0;padding-left:18px"><li>Abre esta web en Safari.</li><li>Pulsa Compartir (el cuadrado con la flecha).</li><li>Elige «Añadir a pantalla de inicio».</li></ol></section><section class="card stack"><h3>Android (Chrome)</h3><ol class="small" style="margin:0;padding-left:18px"><li>Abre esta web en Chrome.</li><li>Menú ⋮ → «Instalar aplicación» o «Añadir a pantalla de inicio».</li></ol></section><section class="card stack"><h3>Ordenador</h3><p class="small">En Chrome o Edge, pulsa el icono de instalar de la barra de direcciones.</p><p class="small muted">Una vez instalada funciona sin internet. Tus datos se guardan en cada dispositivo: usa la copia de seguridad para pasarlos de uno a otro.</p></section></div>'
+      b = BUILD === 'web' ? '<div class="grid g2"><section class="card stack"><h3>iPhone (Safari)</h3><ol class="small" style="margin:0;padding-left:18px"><li>Abre esta web en Safari.</li><li>Pulsa Compartir (el cuadrado con la flecha).</li><li>Elige «Añadir a pantalla de inicio».</li></ol></section><section class="card stack"><h3>Android (Chrome)</h3><ol class="small" style="margin:0;padding-left:18px"><li>Abre esta web en Chrome.</li><li>Menú ⋮ → «Instalar aplicación» o «Añadir a pantalla de inicio».</li></ol></section><section class="card stack"><h3>Ordenador</h3><p class="small">En Chrome o Edge, pulsa el icono de instalar de la barra de direcciones.</p><p class="small muted">Una vez instalada funciona sin internet.</p></section><section class="card stack"><h3>Tus datos en todos lados</h3><p class="small">Cada dispositivo guarda sus propios datos. Para tener lo mismo en el móvil y en el ordenador, activa la sincronización.</p><p class="small muted">En iPhone, la app de la pantalla de inicio guarda sus datos aparte de Safari: vincúlala desde dentro de la app (Ajustes → Sincronizar → Escanear el código QR).</p><button type="button" class="btn line" data-act="syncOpen" style="align-self:flex-start">' + ic('refresh', 's') + ' Ir a Sincronizar</button></section></div>'
         : '<section class="card stack"><h3>Versión instalable</h3><p class="small">Esta página vive dentro de Claude. Para tenerla como app en el móvil, usa la versión web (la carpeta «estudio-carmen-web»): se sube gratis a GitHub Pages y, desde el móvil, Compartir → «Añadir a pantalla de inicio». Funciona sin internet y puede mandar avisos.</p><p class="small">Para llevarte tus datos de aquí a la app: «Copia de seguridad» → descargar → y en la app, restaurar.</p></section>';
     } else {
       b = '<section class="card stack prose"><h3>Estudio de Carmen</h3><p>Planificador personal de ' + esc(p.nombre) + ' para 2º del ' + esc(p.grado) + ' (grupo ' + esc(p.grupo) + '). Inspirado en la imagen de la web de la UFV (tipografías Playfair Display y Manrope, azul marino y frambuesa). <b>No es una página oficial de la Universidad Francisco de Vitoria.</b></p><h4>De dónde salen los datos</h4><ul>' + D.fuentes.map(f => '<li>' + esc(f) + '</li>').join('') + '<li>Calendario académico 2026-27 de la UFV: <a href="' + esc(D.calendario.fuente) + '" target="_blank" rel="noopener">PDF</a></li></ul><h4>Calendario académico</h4><ul>' + D.calendario.notas.map(n => '<li>' + esc(n) + '</li>').join('') + '</ul><p class="small muted">Versión ' + esc(D.version) + ' · ' + (BUILD === 'web' ? 'versión web instalable' : 'versión en Claude') + '. Si la UFV cambia horarios, aulas o fechas, manda lo que publique la universidad.</p></section>';
@@ -2966,7 +2999,7 @@ VIEWS.ajustes = {
     return head + tabs + b;
   },
 };
-ACT.ajTab = el => { UI.ajTab = el.dataset.v; renderAll(); };
+ACT.ajTab = el => { if (el.dataset.v !== 'sync') Sync.clearQR(); UI.ajTab = el.dataset.v; renderAll(); };
 ACT.ajTema = el => { LS.set('estudio-tema', el.dataset.v); applyLook(); renderAll(); };
 ACT.ajAcc = el => { Store.put('ajustes', 'main', Object.assign({}, Store.aj(), {acento: el.dataset.v})).then(applyLook); };
 CHG.ajCat = el => { const aj = Store.aj(); Store.put('ajustes', 'main', Object.assign({}, aj, {cats: Object.assign({}, aj.cats || {}, {[el.dataset.k]: el.value})})).then(applyLook); };
@@ -3080,7 +3113,7 @@ CHG.restore = async el => {
   d.el.querySelector('[data-no]').onclick = d.close; d.el.querySelector('[data-mer]').onclick = () => run(false); d.el.querySelector('[data-rep]').onclick = async () => { if (await ask('¿Seguro? Se borrará todo lo que tienes ahora y se pondrá lo de la copia.', {ok: 'Sustituir', danger: true})) run(true); };
 };
 ACT.wipe = async () => {
-  if (!await ask('Vas a borrar todas tus tareas, entregas, notas, fotos, clases de autoescuela y demás datos. ¿Has descargado una copia antes?', {ok: 'Sí, seguir', danger: true})) return;
+  if (!await ask('Vas a borrar todas tus tareas, entregas, notas, fotos, clases de autoescuela y demás datos' + (Sync.active() ? ', y como tienes la sincronización activada, también de GitHub y de tus otros dispositivos' : '') + '. ¿Has descargado una copia antes?', {ok: 'Sí, seguir', danger: true})) return;
   if (!await ask('Último aviso: esto no se puede deshacer.', {ok: 'Borrar todo', danger: true})) return;
   for (const c of COLS) for (const x of Store.list(c)) await Store.del(c, x.id);
   toast('Datos borrados'); applyLook();
@@ -3095,12 +3128,745 @@ function dailyNotify() {
   exams().filter(examActive).filter(e => e.f === t && e.i).forEach(e => { const ms = dt(e.f, e.i) - 3600e3 - now; if (ms > 0) setTimeout(() => notify('Examen en una hora', ((subj(e.cod) || {}).n || '') + ' · ' + e.aula), ms); });
 }
 
+/* ===================== Sincronización cifrada con GitHub (solo versión web) =====================
+   Cada dispositivo guarda una copia completa de los datos. Al sincronizar se baja el archivo cifrado de
+   un repositorio PRIVADO de GitHub, se junta con lo de aquí (de cada elemento gana la versión más
+   reciente; los borrados se recuerdan 120 días) y, si hace falta, se vuelve a subir.
+   Cifrado: AES-GCM de 256 bits con una clave sacada de la contraseña (PBKDF2-SHA256, 600 000 vueltas).
+   La contraseña no se guarda en ningún sitio; el token se guarda cifrado con esa clave. */
+const Sync = (() => {
+  const PATH = 'estudio-carmen.enc.json';
+  const ITER = 600000;
+  const API = 'https://api.github.com';
+  const K = {cfg: 'estudio-sync', del: 'estudio-sync-del', meta: 'estudio-sync-meta', hint: 'estudio-sync-aviso'};
+  const KEY_ID = '__sync_key__', KEY_NEW = '__sync_key_nueva__';
+  const AAD_MAIN = 'estudio-carmen/' + PATH, AAD_TOKEN = 'estudio-carmen/token', AAD_LINK = 'estudio-carmen/vincular';
+  const TOMB_DAYS = 120, BATCH = 8, SQUASH_EVERY = 150;
+  const TOKEN_RE = /^(github_pat_|ghp_)[A-Za-z0-9_]{20,255}$/;
+  const te = new TextEncoder(), td = new TextDecoder();
+  const UA = navigator.userAgent || '';
+  const TOUCH_MAC = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+  const SMALL_TOUCH = !!(window.matchMedia && matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 600);
+  const DEV = /iPhone|iPod|Mobile/i.test(UA) || SMALL_TOUCH ? 'el móvil' : (/iPad|Android/i.test(UA) || TOUCH_MAC) ? 'la tableta' : 'el ordenador';
+  const IOS = /iPhone|iPad|iPod/.test(UA) || TOUCH_MAC;
+  const standalone = () => !!((window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true);
+  const st = {cfg: null, key: null, token: '', on: false, err: null, busy: null, again: false, dirty: false, dirtyAt: 0, timer: 0, retryAt: 0, fails: 0, sha: '', etag: '', last: 0, progress: ''};
+
+  /* ---------- utilidades ---------- */
+  const err = (code, extra) => Object.assign(new Error(code), {code}, extra || {});
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  function b64(u8) { let s = ''; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(s); }
+  function unb64(s) { const b = atob(String(s || '').replace(/\s+/g, '')); const u = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; }
+  const b64u = u8 => b64(u8).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  const unb64u = s => { s = String(s).replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '='; return unb64(s); };
+  const join = (...a) => { const o = new Uint8Array(a.reduce((n, x) => n + x.length, 0)); let p = 0; a.forEach(x => { o.set(x, p); p += x.length; }); return o; };
+  const hasCrypto = () => !!(window.crypto && crypto.subtle && window.isSecureContext !== false);
+  async function pipe(u8, tr) { return new Uint8Array(await new Response(new Blob([u8]).stream().pipeThrough(tr)).arrayBuffer()); }
+  async function gzip(u8) {
+    try { if (typeof CompressionStream === 'function' && Blob.prototype.stream) return await pipe(u8, new CompressionStream('gzip')); } catch (e) {}
+    try { if (await loadLib('fflate')) return window.fflate.gzipSync(u8); } catch (e) {}
+    return null;
+  }
+  async function gunzip(u8) {
+    try { if (typeof DecompressionStream === 'function' && Blob.prototype.stream) return await pipe(u8, new DecompressionStream('gzip')); } catch (e) {}
+    if (!await loadLib('fflate')) throw err('old_browser');
+    try { return window.fflate.gunzipSync(u8); } catch (e) { throw err('format'); }
+  }
+  async function derive(pass, salt, iter = ITER, extractable = false) {
+    const base = await crypto.subtle.importKey('raw', te.encode(String(pass).normalize('NFC')), 'PBKDF2', false, ['deriveKey']);
+    return crypto.subtle.deriveKey({name: 'PBKDF2', hash: 'SHA-256', salt, iterations: iter}, base, {name: 'AES-GCM', length: 256}, extractable, ['encrypt', 'decrypt']);
+  }
+  async function seal(key, u8, aad) { const iv = crypto.getRandomValues(new Uint8Array(12)); return {iv, ct: new Uint8Array(await crypto.subtle.encrypt({name: 'AES-GCM', iv, additionalData: te.encode(aad)}, key, u8))}; }
+  async function unseal(key, iv, ct, aad) { try { return new Uint8Array(await crypto.subtle.decrypt({name: 'AES-GCM', iv, additionalData: te.encode(aad)}, key, ct)); } catch (e) { throw err('decrypt'); } }
+  async function kidOf(salt) { const h = new Uint8Array(await crypto.subtle.digest('SHA-256', salt)); return Array.from(h.subarray(0, 4), x => x.toString(16).padStart(2, '0')).join(''); }
+  function normRepo(s) {
+    s = String(s || '').trim().replace(/^(https?:\/\/)?(www\.)?github\.com\//i, '').replace(/[?#].*$/, '');
+    const p = s.split('/').filter(Boolean); if (p.length < 2) return '';
+    const o = p[0], r = p[1].replace(/\.git$/i, '');
+    return /^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$/.test(o) && /^[A-Za-z0-9._-]{1,100}$/.test(r) ? o + '/' + r : '';
+  }
+  function stable(v, top) {
+    if (v === null || typeof v !== 'object') return JSON.stringify(v === undefined ? null : v);
+    if (Array.isArray(v)) return '[' + v.map(x => stable(x === undefined ? null : x)).join(',') + ']';
+    return '{' + Object.keys(v).filter(k => v[k] !== undefined && !(top && k === 'id')).sort().map(k => JSON.stringify(k) + ':' + stable(v[k])).join(',') + '}';
+  }
+  function agoTxt(ts) {
+    const s = (Date.now() - ts) / 1000; if (s < 45) return 'hace un momento'; if (s < 3600) return 'hace ' + Math.max(1, Math.round(s / 60)) + ' min';
+    const d = new Date(ts); return ymd(d) === today() ? 'hoy a las ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) : 'el ' + fDY(ymd(d));
+  }
+
+  /* ---------- textos de error ---------- */
+  const TX = {
+    auth: ['GitHub no acepta el token de la sincronización.', 'Puede que haya caducado o que se haya borrado. Crea uno nuevo y pégalo aquí; mientras tanto, tus cambios siguen guardados en este dispositivo.'],
+    forbidden: ['El token no tiene permiso para guardar en el repositorio.', 'En GitHub, edita el token y en «Repository permissions → Contents» elige «Read and write».'],
+    norepo: ['No encuentro el repositorio.', 'Revisa el nombre (usuario/repositorio) y que el token tenga acceso a él («Repository access → Only select repositories»).'],
+    public: ['Ese repositorio es público.', 'Para tus datos tiene que ser privado: en GitHub, Settings → General → Danger Zone → Change visibility → Private.'],
+    rekey: ['La contraseña de la sincronización ha cambiado.', 'Se cambió desde otro dispositivo. Escribe aquí la contraseña nueva: lo que tengas en este dispositivo no se pierde.'],
+    decrypt: ['No se pueden abrir los datos de GitHub.', 'El archivo no se corresponde con tu contraseña o está dañado.'],
+    format: ['El archivo de datos de GitHub no se reconoce.', 'Puede que esté dañado.'],
+    newer: ['Tus datos se guardaron con una versión más nueva de la app.', 'Recarga la página para actualizarla.'],
+    locked: ['Falta tu contraseña para seguir sincronizando.', 'Escríbela otra vez en este dispositivo.'],
+    old_browser: ['Este navegador es demasiado antiguo para sincronizar.', 'Actualízalo o usa otro.'],
+    empty: ['El repositorio está vacío.', 'En GitHub, añade un archivo cualquiera (Add file → Create new file, por ejemplo un README) y vuelve a intentarlo.'],
+    badpass: ['Contraseña incorrecta.', 'No abre los datos que ya hay en GitHub.'],
+    oldlink: ['Este código de vinculación es antiguo.', 'La contraseña se cambió después de crearlo: genera uno nuevo en el otro dispositivo.'],
+    badlink: ['Ese enlace no es de vinculación o está incompleto.', 'Cópialo entero desde Ajustes → Sincronizar del otro dispositivo.'],
+    badrepo: ['Escribe el repositorio como usuario/nombre.', 'Por ejemplo: usuario/enlacecarmen-datos (o pega su dirección de GitHub).'],
+    badtoken: ['Eso no parece un token de GitHub.', 'Tiene que empezar por github_pat_ y estar copiado entero.'],
+    shortpass: ['La contraseña es muy corta.', 'Usa al menos 8 caracteres; mejor una frase que recuerdes.'],
+    mismatch: ['Las dos contraseñas no coinciden.', ''],
+    confirm: ['Repite la contraseña para crearla.', ''],
+    nopass: ['Escribe la contraseña.', ''],
+    nocrypto: ['Este navegador no puede cifrar aquí.', 'Abre la app desde su dirección https://…, no como archivo.'],
+    offline: ['Sin conexión a internet.', 'Tus cambios están guardados aquí y se subirán solos cuando vuelva la conexión.'],
+    network: ['No se puede conectar con GitHub.', 'Revisa la conexión; se reintentará solo.'],
+    rate: ['GitHub está limitando las peticiones.', 'Se reintentará solo en unos minutos.'],
+    server: ['GitHub no responde ahora mismo.', 'Se reintentará solo.'],
+    conflict: ['Otro dispositivo estaba guardando a la vez.', 'Se reintentará solo.'],
+    invalid: ['GitHub no ha aceptado los datos.', 'Se reintentará solo.'],
+    http: ['GitHub ha devuelto un error.', 'Se reintentará solo.'],
+    unknown: ['Algo ha fallado al sincronizar.', 'Se reintentará solo.'],
+  };
+  const T = c => TX[c] || TX.unknown;
+  const errText = e => { const t = T(e && e.code); return t[0] + (t[1] ? ' ' + t[1] : ''); };
+  const SOFT = ['offline', 'network', 'server', 'rate', 'conflict', 'invalid', 'http', 'unknown'];
+
+  /* ---------- API de GitHub ---------- */
+  const enc = s => String(s).split('/').map(encodeURIComponent).join('/');
+  const repoPath = (sub, repo) => '/repos/' + enc(repo || st.cfg.repo) + (sub ? '/' + sub : '');
+  const contentsPath = (p, repo) => repoPath('contents/' + enc(p), repo);
+  const filePath = id => 'archivos/' + st.cfg.kid + '/' + id + '.bin';
+  async function gh(method, path, o = {}) {
+    const h = {Accept: o.accept || 'application/vnd.github+json'};
+    const tk = o.token || st.token; if (tk) h.Authorization = 'Bearer ' + tk;
+    const body = o.body === undefined ? undefined : JSON.stringify(o.body);
+    if (body !== undefined) h['Content-Type'] = 'application/json';
+    if (o.etag) h['If-None-Match'] = o.etag;
+    let r;
+    try { r = await fetch(API + path, {method, headers: h, body, cache: 'no-store', credentials: 'omit', referrerPolicy: 'no-referrer', keepalive: !!(o.keepalive && body && body.length < 60000)}); }
+    catch (e) { throw err(navigator.onLine === false ? 'offline' : 'network'); }
+    if (r.status === 304) return {status: 304};
+    if (r.ok) {
+      const out = {status: r.status, etag: r.headers.get('ETag') || '', type: r.headers.get('Content-Type') || ''};
+      if (o.raw) out.buf = new Uint8Array(await r.arrayBuffer());
+      else if (r.status !== 204) out.json = await r.json().catch(() => null);
+      return out;
+    }
+    let msg = ''; try { msg = String((await r.json()).message || ''); } catch (e) {}
+    const rem = r.headers.get('x-ratelimit-remaining');
+    let code = 'http';
+    if (r.status === 401) code = 'auth';
+    else if (r.status === 403 || r.status === 429) code = (r.status === 429 || rem === '0' || /rate limit/i.test(msg)) ? 'rate' : 'forbidden';
+    else if (r.status === 404) code = /empty/i.test(msg) ? 'empty' : 'notfound';
+    else if (r.status === 409) code = /empty/i.test(msg) ? 'empty' : 'conflict';
+    else if (r.status === 422) code = 'invalid';
+    else if (r.status >= 500) code = 'server';
+    throw err(code, {status: r.status, msg, reset: (+r.headers.get('x-ratelimit-reset') || 0) * 1000});
+  }
+  async function repoInfo(repo, token) {
+    let r;
+    try { r = await gh('GET', repoPath('', repo), {token}); }
+    catch (e) { if (e.code === 'notfound') throw err('norepo'); throw e; }
+    const j = r.json || {};
+    if (j.private === false || j.visibility === 'public') throw err('public');
+    return j;
+  }
+  async function getMain(etag, repo, token) {
+    const r = await gh('GET', contentsPath(PATH, repo), {etag, token});
+    if (r.status === 304) return {same: true};
+    const j = r.json || {};
+    if (!j.sha || (j.type && j.type !== 'file')) throw err('format');
+    let c = j.encoding === 'base64' ? j.content : '';
+    if (!c) { const b = await gh('GET', repoPath('git/blobs/' + j.sha, repo), {token}); c = (b.json && b.json.content) || ''; }
+    let text = null; try { text = td.decode(unb64(c)); } catch (e) {}
+    return {sha: j.sha, etag: r.etag, text};
+  }
+  async function putMain(env, sha) {
+    const content = b64(te.encode(JSON.stringify(env)));
+    const body = {message: 'Datos actualizados desde ' + DEV, content}; if (sha) body.sha = sha;
+    let r;
+    try { r = await gh('PUT', contentsPath(PATH), {body, keepalive: document.hidden}); }
+    catch (e) {
+      if (e.code === 'invalid') throw err('conflict');
+      if (e.code === 'notfound') { await repoInfo(st.cfg.repo); throw err('forbidden'); }
+      throw e;
+    }
+    const m = LS.get(K.meta, {}) || {}; m.pushes = (m.pushes || 0) + 1; LS.set(K.meta, m);
+    return (r.json && r.json.content && r.json.content.sha) || '';
+  }
+
+  /* ---------- sobre cifrado ---------- */
+  async function readEnv(text) {
+    let env; try { env = JSON.parse(text || ''); } catch (e) { throw err('format'); }
+    if (!env || env.app !== 'estudio-carmen' || !env.kdf || !env.ct || !env.iv) throw err('format');
+    if (env.kdf.salt !== st.cfg.salt) throw err('rekey');
+    let u8 = await unseal(st.key, unb64(env.iv), unb64(env.ct), AAD_MAIN);
+    if (env.z === 'gzip') u8 = await gunzip(u8);
+    let j; try { j = JSON.parse(td.decode(u8)); } catch (e) { throw err('format'); }
+    if (!j || j.app !== 'estudio-carmen' || !j.docs || typeof j.docs !== 'object') throw err('format');
+    if ((+j.v || 1) > 1) throw err('newer');
+    return j;
+  }
+  async function writeEnv(state) {
+    const raw = te.encode(JSON.stringify(state));
+    const z = await gzip(raw);
+    const {iv, ct} = await seal(st.key, z || raw, AAD_MAIN);
+    return {app: 'estudio-carmen', v: 1, kdf: {alg: 'PBKDF2-SHA256', iter: st.cfg.iter, salt: st.cfg.salt}, z: z ? 'gzip' : null, iv: b64(iv), ct: b64(ct)};
+  }
+  async function sealFile(id, blob) {
+    const data = new Uint8Array(await blob.arrayBuffer());
+    const mt = te.encode(String(blob.type || 'application/octet-stream').slice(0, 200));
+    const {iv, ct} = await seal(st.key, join(new Uint8Array([mt.length]), mt, data), 'estudio-carmen/archivo/' + id);
+    return join(new Uint8Array([1]), iv, ct);
+  }
+  async function unsealFile(id, u8) {
+    if (!u8 || u8[0] !== 1 || u8.length < 30) throw err('format');
+    const p = await unseal(st.key, u8.subarray(1, 13), u8.subarray(13), 'estudio-carmen/archivo/' + id);
+    const n = p[0]; return new Blob([p.subarray(1 + n)], {type: td.decode(p.subarray(1, 1 + n))});
+  }
+
+  /* ---------- borrados (lápidas) ---------- */
+  const tombs = () => LS.get(K.del, {}) || {};
+  function noteWrite(col, id, doc) {
+    if (BUILD !== 'web') return;
+    const k = col + '/' + id; const d = tombs();
+    if (doc === null) { d[k] = Date.now(); LS.set(K.del, d); }
+    else if (d[k]) { delete d[k]; LS.set(K.del, d); }
+    changed();
+  }
+
+  /* ---------- juntar ---------- */
+  function merge(remote) {
+    const cut = Date.now() - TOMB_DAYS * 864e5;
+    const ld = tombs(), rd = (remote && remote.del) || {};
+    const del = {};
+    for (const k in ld) if (+ld[k] >= cut) del[k] = +ld[k];
+    for (const k in rd) if (+rd[k] >= cut && !(del[k] >= +rd[k])) del[k] = +rd[k];
+    const rdocs = (remote && remote.docs) || {};
+    const known = new Set(COLS);
+    const docs = {}; let lc = false, rc = !remote;
+    for (const col of new Set(COLS.concat(Object.keys(rdocs)))) {
+      const L = known.has(col) ? (Store.data[col] || {}) : {}, R = rdocs[col] || {};
+      const out = {};
+      for (const id of new Set(Object.keys(L).concat(Object.keys(R)))) {
+        let l = null; if (L[id]) { l = Object.assign({}, L[id]); delete l.id; }
+        const r = R[id] || null;
+        let w, same = false;
+        if (l && r) {
+          const lu = +l.upd || 0, ru = +r.upd || 0;
+          if (lu !== ru) w = lu > ru ? l : r;
+          else { const a = stable(l, true), b = stable(r, true); same = a === b; w = same || a < b ? r : l; }
+        } else w = l || r;
+        const k = col + '/' + id, t = del[k] || 0;
+        if (t && t >= (+w.upd || 0)) { if (l && known.has(col)) lc = true; if (r) rc = true; continue; }
+        if (t) delete del[k];
+        out[id] = w;
+        if (known.has(col) && (!l || (w !== l && !same))) lc = true;
+        if (!r || (w !== r && !same)) rc = true;
+      }
+      docs[col] = out;
+    }
+    if (!rc) { const a = Object.keys(del); if (a.length !== Object.keys(rd).length || a.some(k => +rd[k] !== del[k])) rc = true; }
+    return {docs, del, localChanged: lc, remoteChanged: rc};
+  }
+  function applyLocal(docs) {
+    COLS.forEach(c => { const m = {}; const src = docs[c] || {}; for (const id in src) m[id] = Object.assign({}, src[id], {id}); Store.data[c] = m; });
+    if (Store._persist && !Store._persist()) toast('No queda espacio en este dispositivo para guardar lo que llega de la sincronización.');
+    const ae = document.activeElement, view = $('#view');
+    if (ae && view && view.contains(ae) && /INPUT|TEXTAREA|SELECT/.test(ae.tagName)) { renderChrome(); ae.addEventListener('blur', () => scheduleRender(), {once: true}); }
+    else scheduleRender();
+  }
+
+  /* ---------- archivos (fotos, PDF) ---------- */
+  async function uploadFiles(docs, have) {
+    const known = new Set(have || []);
+    const refs = new Set();
+    JSON.stringify(docs).replace(/"l:([a-z0-9]{4,40})"/g, (m, id) => { refs.add(id); return m; });
+    const todo = []; for (const id of refs) if (!known.has(id)) todo.push(id);
+    const ids = []; let n = 0, more = false;
+    for (const id of todo) {
+      let blob = null; try { blob = await IDB.get(id); } catch (e) {}
+      if (!blob || !(blob instanceof Blob) || blob.size > 25e6) continue;
+      if (n >= BATCH) { more = true; break; }
+      if (n) await sleep(700);   // GitHub limita cuántos archivos se pueden crear por minuto
+      n++; st.progress = 'Subiendo archivos (' + n + ')…'; paint();
+      const bytes = await sealFile(id, blob);
+      try { await gh('PUT', contentsPath(filePath(id)), {body: {message: 'Archivo cifrado', content: b64(bytes)}}); }
+      catch (e) { if (e.code !== 'invalid') throw e; }   // 422: ya estaba subido
+      ids.push(id);
+    }
+    return {ids, more};
+  }
+  const inflight = new Map(), miss = new Map(); let active = 0; const waitq = [];
+  const slot = () => new Promise(res => { if (active < 3) { active++; res(); } else waitq.push(res); });
+  const release = () => { active--; const n = waitq.shift(); if (n) { active++; n(); } };
+  function fetchFile(id) {
+    if (BUILD !== 'web' || !st.on || !st.key || !/^[a-z0-9]{4,40}$/.test(id)) return Promise.resolve(null);
+    if (inflight.has(id)) return inflight.get(id);
+    const ms = miss.get(id); if (ms && Date.now() - ms < 120000) return Promise.resolve(null);
+    const p = (async () => {
+      await slot();
+      try {
+        const r = await gh('GET', contentsPath(filePath(id)), {accept: 'application/vnd.github.raw+json', raw: true});
+        let u8 = r.buf;
+        if (u8 && u8[0] === 0x7b) { const j = JSON.parse(td.decode(u8)); u8 = unb64(j.content || ''); }   // por si GitHub responde en JSON
+        const blob = await unsealFile(id, u8);
+        try { await IDB.put(id, blob); } catch (e) {}
+        return blob;
+      } catch (e) { miss.set(id, Date.now()); return null; }
+      finally { release(); inflight.delete(id); }
+    })();
+    inflight.set(id, p); return p;
+  }
+
+  /* ---------- compactar el historial de vez en cuando (el repositorio no crece sin fin) ---------- */
+  async function maybeSquash() {
+    const m = LS.get(K.meta, {}) || {}; if ((m.pushes || 0) < SQUASH_EVERY) return;
+    m.pushes = 0; LS.set(K.meta, m);
+    try {
+      const info = await repoInfo(st.cfg.repo); const br = enc(info.default_branch || 'main');
+      const ref = await gh('GET', repoPath('git/ref/heads/' + br));
+      const c = await gh('GET', repoPath('git/commits/' + ref.json.object.sha));
+      if (!c.json.parents || !c.json.parents.length) return;
+      const nc = await gh('POST', repoPath('git/commits'), {body: {message: 'Datos cifrados del Estudio (historial compactado)', tree: c.json.tree.sha, parents: []}});
+      await gh('PATCH', repoPath('git/refs/heads/' + br), {body: {sha: nc.json.sha, force: true}});
+    } catch (e) { /* no pasa nada: se intentará más adelante */ }
+  }
+
+  /* ---------- una vuelta de sincronización ---------- */
+  async function once(o) {
+    const full = !!(o.full || o.replace || st.dirty || !st.sha);
+    let g = null;
+    try { g = await getMain(full ? '' : st.etag); }
+    catch (e) { if (e.code === 'notfound' || e.code === 'empty') { await repoInfo(st.cfg.repo); g = null; } else throw e; }
+    if (g && g.same) return false;
+    if (g && !full && g.sha === st.sha) { st.etag = g.etag; return false; }
+    const remote = g && !o.replace ? await readEnv(g.text) : null;
+    // desde aquí hasta la subida no hay esperas: lo que se toque mientras tanto queda para la siguiente vuelta
+    st.dirty = false; st.dirtyAt = 0;
+    const m = merge(remote);
+    if (m.localChanged) applyLocal(m.docs);
+    LS.set(K.del, m.del);
+    let rc = m.remoteChanged || !g || !!o.replace;
+    try {
+      const up = await uploadFiles(m.docs, remote ? remote.files : []);
+      if (up.ids.length) rc = true;
+      if (up.more) st.again = true;
+      if (!rc) { st.sha = g.sha; st.etag = g.etag; return true; }
+      const files = Array.from(new Set(((remote && remote.files) || []).concat(up.ids)));
+      const env = await writeEnv({app: 'estudio-carmen', v: 1, upd: Date.now(), dev: DEV, docs: m.docs, del: m.del, files});
+      st.sha = await putMain(env, g ? g.sha : null);
+      st.etag = '';
+      await maybeSquash();
+      return true;
+    } catch (e) { st.dirty = true; st.dirtyAt = st.dirtyAt || Date.now(); throw e; }
+  }
+  function fail(e) {
+    const code = (e && e.code) || 'unknown';
+    if (!e || !e.code) console.error(e); else if (!SOFT.includes(code)) console.warn('sincronización:', code, e.msg || '');
+    const soft = SOFT.includes(code);
+    st.err = {code, soft};
+    if (soft) {
+      st.fails = (st.fails || 0) + 1;
+      const w = code === 'rate' ? Math.max(60000, (e.reset || 0) - Date.now()) : code === 'offline' ? 60000 : Math.min(600000, 10000 * Math.pow(2, st.fails - 1));
+      st.retryAt = Date.now() + w; kick(w);
+    }
+  }
+  async function run(o = {}) {
+    if (!st.on) return false;
+    if (st.busy) { st.again = true; return st.busy; }
+    clearTimeout(st.timer);
+    if (navigator.onLine === false) { fail(err('offline')); paint(); return false; }
+    st.busy = (async () => {
+      st.progress = ''; paint();
+      try {
+        let fresh = false;
+        for (let i = 0; ; i++) {
+          try { fresh = await once(o); break; }
+          catch (e) { if (e.code === 'conflict' && i < 4) { await sleep(400 + Math.random() * 900); continue; } throw e; }
+        }
+        st.err = null; st.fails = 0; st.retryAt = 0; st.last = Date.now();
+        const m = LS.get(K.meta, {}) || {}; m.last = st.last; LS.set(K.meta, m);
+        if (fresh && miss.size) { miss.clear(); scheduleRender(); }   // han llegado datos nuevos: reintentar fotos que faltaban
+        return true;
+      } catch (e) { fail(e); return false; }
+      finally { st.progress = ''; }
+    })();
+    const ok = await st.busy; st.busy = null; paint();
+    if (st.on && (st.again || (ok && st.dirty))) { st.again = false; kick(st.dirty ? 1500 : 300); }
+    return ok;
+  }
+  function kick(ms = 0, force = false) {
+    if (!st.on) return;
+    if (st.err && !st.err.soft && !force) return;
+    if (!force && st.retryAt > Date.now()) ms = Math.max(ms, st.retryAt - Date.now());
+    clearTimeout(st.timer); st.timer = setTimeout(() => run(), ms);
+  }
+  function changed() {
+    if (BUILD !== 'web') return;
+    st.dirty = true; if (!st.dirtyAt) st.dirtyAt = Date.now();
+    if (!st.on) return;
+    kick(Math.max(300, Math.min(2500, 20000 - (Date.now() - st.dirtyAt))));
+    paint();
+  }
+  let pq = 0;
+  function paint() { if (pq) return; pq = requestAnimationFrame(() => { pq = 0; renderChrome(); if (UI.view === 'ajustes' && UI.ajTab === 'sync') scheduleRender(); }); }
+
+  /* ---------- conectar, vincular, desconectar ---------- */
+  async function keepKey(key, pass, salt, iter, cfg) {
+    let ok = false;
+    try { await IDB.put(KEY_NEW, key); const k = await IDB.get(KEY_NEW); ok = !!(k && k.type === 'secret'); } catch (e) {}
+    if (!ok) { const k2 = await derive(pass, salt, iter, true); cfg.rk = b64(new Uint8Array(await crypto.subtle.exportKey('raw', k2))); }
+    return ok;
+  }
+  async function connect({repo, token, pass, linkSalt, linkKey, confirmed, replace}) {
+    if (!hasCrypto()) throw err('nocrypto');
+    repo = normRepo(repo); if (!repo) throw err('badrepo');
+    token = String(token || '').trim(); if (!TOKEN_RE.test(token)) throw err('badtoken');
+    pass = String(pass || ''); if (!pass) throw err('nopass');
+    await repoInfo(repo, token);
+    let env = null, exists = false;
+    try { const g = await getMain('', repo, token); exists = true; try { env = JSON.parse(g.text); } catch (e) { env = null; } }
+    catch (e) { if (e.code !== 'notfound' && e.code !== 'empty') throw e; }
+    let salt, iter = ITER, key;
+    if (exists && !replace) {
+      if (!env || env.app !== 'estudio-carmen' || !env.kdf || !env.kdf.salt) throw err('format');
+      if (linkSalt && b64(linkSalt) !== env.kdf.salt) throw err('oldlink');
+      salt = unb64(env.kdf.salt); iter = +env.kdf.iter || ITER;
+      key = linkKey && iter === ITER ? linkKey : await derive(pass, salt, iter);
+      try { await unseal(key, unb64(env.iv), unb64(env.ct), AAD_MAIN); } catch (e) { throw err('badpass'); }
+    } else {
+      if (!exists && !linkSalt && !confirmed) throw err('confirm');
+      salt = linkSalt && !replace ? linkSalt : crypto.getRandomValues(new Uint8Array(16));
+      key = linkKey && linkSalt && !replace ? linkKey : await derive(pass, salt, iter);
+    }
+    const tok = await seal(key, te.encode(token), AAD_TOKEN);
+    const cfg = {repo, salt: b64(salt), iter, kid: await kidOf(salt), tok: {iv: b64(tok.iv), ct: b64(tok.ct)}, dev: DEV, since: Date.now()};
+    const inIDB = await keepKey(key, pass, salt, iter, cfg);
+    clearTimeout(st.timer); if (st.busy) { try { await st.busy; } catch (e) {} }
+    const prev = {cfg: st.cfg, key: st.key, token: st.token, on: st.on, err: st.err, sha: st.sha, etag: st.etag};
+    Object.assign(st, {cfg, key, token, on: true, err: null, sha: '', etag: '', retryAt: 0, fails: 0, again: false});
+    miss.clear();
+    const ok = await run({full: true, replace: !!replace});
+    if (!ok) {
+      const code = (st.err && st.err.code) || 'unknown';
+      clearTimeout(st.timer);
+      Object.assign(st, prev); try { await IDB.del(KEY_NEW); } catch (e) {}
+      paint(); throw err(code);
+    }
+    if (inIDB) { try { await IDB.put(KEY_ID, key); await IDB.del(KEY_NEW); } catch (e) {} }
+    LS.set(K.cfg, cfg); LS.set(K.meta, {last: st.last, pushes: 0});
+    try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {}); } catch (e) {}
+    UI.syncQR = null; paint();
+    return cfg;
+  }
+  async function reload() {
+    clearTimeout(st.timer);
+    Object.assign(st, {cfg: LS.get(K.cfg, null), on: false, key: null, token: '', err: null, sha: '', etag: ''});
+    st.last = (LS.get(K.meta, {}) || {}).last || 0;
+    if (!st.cfg || !st.cfg.repo) { paint(); return; }
+    try {
+      if (!hasCrypto()) throw err('nocrypto');
+      let key = null; try { key = await IDB.get(KEY_ID); } catch (e) {}
+      if (!(key && key.type === 'secret') && st.cfg.rk) key = await crypto.subtle.importKey('raw', unb64(st.cfg.rk), 'AES-GCM', false, ['encrypt', 'decrypt']);
+      if (!(key && key.type === 'secret')) throw err('locked');
+      const token = td.decode(await unseal(key, unb64(st.cfg.tok.iv), unb64(st.cfg.tok.ct), AAD_TOKEN));
+      Object.assign(st, {key, token, on: true});
+      kick(0, true);
+    } catch (e) { st.err = {code: e.code === 'nocrypto' ? 'nocrypto' : 'locked', soft: false}; }
+    paint();
+  }
+  async function unlock(pass) {
+    const salt = unb64(st.cfg.salt), iter = st.cfg.iter || ITER;
+    const key = await derive(pass, salt, iter);
+    let token; try { token = td.decode(await unseal(key, unb64(st.cfg.tok.iv), unb64(st.cfg.tok.ct), AAD_TOKEN)); } catch (e) { throw err('badpass'); }
+    if (await keepKey(key, pass, salt, iter, st.cfg)) { try { await IDB.put(KEY_ID, key); await IDB.del(KEY_NEW); } catch (e) {} }
+    LS.set(K.cfg, st.cfg);
+    Object.assign(st, {key, token, on: true, err: null, sha: ''});
+    const ok = await run({full: true}); if (!ok && st.err && !st.err.soft) throw err(st.err.code);
+  }
+  async function setToken(token) {
+    if (!st.key) throw err('locked');
+    token = String(token || '').trim(); if (!TOKEN_RE.test(token)) throw err('badtoken');
+    await repoInfo(st.cfg.repo, token);
+    const tok = await seal(st.key, te.encode(token), AAD_TOKEN);
+    st.cfg.tok = {iv: b64(tok.iv), ct: b64(tok.ct)}; LS.set(K.cfg, st.cfg);
+    Object.assign(st, {token, on: true, err: null, retryAt: 0, fails: 0, sha: ''});
+    const ok = await run({full: true}); if (!ok && st.err && !st.err.soft) throw err(st.err.code);
+  }
+  async function idbClear() { try { const db = await IDB.open(); await new Promise(res => { const tx = db.transaction('files', 'readwrite'); tx.objectStore('files').clear(); tx.oncomplete = res; tx.onerror = res; }); } catch (e) {} }
+  async function disconnect(wipeLocal) {
+    clearTimeout(st.timer); if (st.busy) { try { await st.busy; } catch (e) {} }
+    try { localStorage.removeItem(K.cfg); localStorage.removeItem(K.meta); } catch (e) {}
+    try { await IDB.del(KEY_ID); await IDB.del(KEY_NEW); } catch (e) {}
+    Object.assign(st, {cfg: null, key: null, token: '', on: false, err: null, sha: '', etag: '', dirty: false, dirtyAt: 0, last: 0, retryAt: 0, fails: 0});
+    UI.syncQR = null; miss.clear();
+    if (wipeLocal) {
+      COLS.forEach(c => { Store.data[c] = {}; }); if (Store._persist) Store._persist();
+      try { localStorage.removeItem(K.del); } catch (e) {}
+      await idbClear(); blobCache.forEach(u => { try { URL.revokeObjectURL(u); } catch (e) {} }); blobCache.clear();
+      scheduleRender();
+    }
+    paint();
+  }
+
+  /* ---------- enlace y código QR para vincular ---------- */
+  async function makeLink() {
+    const {iv, ct} = await seal(st.key, te.encode(JSON.stringify({r: st.cfg.repo, t: st.token})), AAD_LINK);
+    return location.href.split('#')[0] + '#vincular=' + b64u(join(new Uint8Array([1]), unb64(st.cfg.salt), iv, ct));
+  }
+  function parseLink(s) {
+    s = String(s || '').trim();
+    const m = s.match(/vincular=([A-Za-z0-9_-]+)/) || s.match(/^([A-Za-z0-9_-]{60,})$/);
+    if (!m) return null;
+    let u; try { u = unb64u(m[1]); } catch (e) { return null; }
+    if (u[0] !== 1 || u.length < 1 + 16 + 12 + 17) return null;
+    return {salt: u.slice(1, 17), iv: u.slice(17, 29), ct: u.slice(29)};
+  }
+  async function qrSVG(text) {
+    if (!await loadLib('qrcode')) return '';
+    const q = window.qrcode(0, 'M'); q.addData(text); q.make();
+    const n = q.getModuleCount(), M = 4; let d = '';
+    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (q.isDark(r, c)) d += 'M' + (c + M) + ' ' + (r + M) + 'h1v1h-1z';
+    return '<svg viewBox="0 0 ' + (n + 2 * M) + ' ' + (n + 2 * M) + '" shape-rendering="crispEdges" role="img" aria-label="Código QR para vincular otro dispositivo"><rect width="100%" height="100%" fill="#fff"/><path d="' + d + '" fill="#001a33"/></svg>';
+  }
+
+  /* ---------- estado en la barra superior y avisos ---------- */
+  function status() {
+    if (BUILD !== 'web' || !st.cfg) return null;
+    const when = st.last ? 'Última sincronización: ' + agoTxt(st.last) : 'Todavía sin sincronizar';
+    if (st.err && !st.err.soft) return ['err', 'Revisa la sincronización', T(st.err.code)[0]];
+    if (st.busy) return ['sync', st.progress || 'Sincronizando…', when];
+    if (st.err && st.err.soft) return ['warn', st.err.code === 'offline' || st.err.code === 'network' ? 'Sin conexión' : 'Reintentando…', 'Tus cambios están guardados aquí y se subirán solos. ' + when];
+    if (st.dirty) return ['warn', 'Cambios sin subir', when];
+    return ['', 'Sincronizado', when];
+  }
+  function banner() {
+    if (BUILD !== 'web') return '';
+    if (st.cfg && st.err && !st.err.soft && !(UI.view === 'ajustes' && UI.ajTab === 'sync')) return '<div class="banner err">' + ic('refresh') + '<div class="grow"><b>' + esc(T(st.err.code)[0]) + '</b> ' + esc(T(st.err.code)[1]) + ' <button type="button" class="btn sm line" data-act="syncOpen" style="margin-left:4px">Arreglarlo</button></div></div>';
+    if (!st.cfg && UI.view === 'inicio' && Store.mode === 'local' && !LS.get(K.hint, false)) return '<div class="banner">' + ic('phone') + '<div class="grow"><b>¿Lo quieres también en el móvil y en el ordenador?</b> Ahora tus datos se guardan solo en este dispositivo. <button type="button" class="btn sm line" data-act="syncOpen" style="margin-left:4px">Activar la sincronización</button></div><button type="button" class="ib sm" data-act="syncHint" aria-label="No volver a mostrar">' + ic('x', 's') + '</button></div>';
+    return '';
+  }
+
+  /* ---------- pestaña de Ajustes ---------- */
+  function fixButtons(code) {
+    const b = (act, label, cls = 'line') => '<button type="button" class="btn sm ' + cls + '" data-act="' + act + '">' + label + '</button>';
+    const a = (href, label) => '<a class="btn sm line" href="' + esc(href) + '" target="_blank" rel="noopener">' + label + ' ' + ic('ext', 's') + '</a>';
+    switch (code) {
+      case 'auth': return b('syncToken', 'Pegar un token nuevo', '') + a('https://github.com/settings/personal-access-tokens/new', 'Crear token');
+      case 'forbidden': return a('https://github.com/settings/personal-access-tokens', 'Ver mis tokens') + b('syncNow', 'Volver a intentarlo');
+      case 'norepo': return b('syncNow', 'Volver a intentarlo') + b('syncToken', 'Cambiar el token');
+      case 'public': return a('https://github.com/' + st.cfg.repo + '/settings', 'Abrir ajustes del repositorio') + b('syncNow', 'Ya es privado');
+      case 'rekey': return b('syncRepass', 'Escribir la contraseña nueva', '') + b('syncScan', 'Escanear un código nuevo');
+      case 'decrypt': case 'format': return b('syncRepass', 'Probar otra contraseña', '') + b('syncReplace', 'Sustituir lo de GitHub por lo de aquí', 'danger');
+      case 'locked': return b('syncUnlock', 'Escribir la contraseña', '');
+      case 'newer': return b('syncReload', 'Recargar', '');
+      case 'empty': return b('syncNow', 'Volver a intentarlo');
+      default: return b('syncNow', 'Volver a intentarlo');
+    }
+  }
+  function setupHTML() {
+    const ios = IOS && !standalone() ? '<p class="tiny muted">En iPhone, la app de la pantalla de inicio guarda sus datos aparte de Safari: si la vas a usar desde allí, añádela primero (Compartir → «Añadir a pantalla de inicio») y vincúlala desde dentro.</p>' : '';
+    return '<div class="grid g2 sync-tab">' +
+      '<section class="card stack"><h3>Lo mismo en el ordenador y en el móvil</h3><p class="small">Ahora mismo lo que apuntas se queda solo en este dispositivo. Con la sincronización se guarda también en un repositorio <b>privado</b> de GitHub, <b>cifrado con una contraseña que solo sabes tú</b>, y cada dispositivo se pone al día solo.</p><ul class="small" style="margin:0;padding-left:18px"><li>Sigue funcionando sin internet: los cambios se suben cuando vuelve la conexión.</li><li>Si cambias lo mismo en dos sitios, se queda el cambio más reciente.</li><li>Las fotos y los archivos también viajan, cifrados.</li></ul></section>' +
+      '<section class="card stack"><h3>¿Ya la tienes en otro dispositivo?</h3><p class="small">Allí, entra en <b>Ajustes → Sincronizar → Vincular otro dispositivo</b> y escanea el código o copia el enlace. Te pedirá la contraseña.</p><div class="row"><button type="button" class="btn" data-act="syncScan">' + ic('phone', 's') + ' Escanear el código QR</button><button type="button" class="btn line" data-act="syncPaste">' + ic('link', 's') + ' Pegar el enlace</button></div>' + ios + '</section>' +
+      '<section class="card stack" style="grid-column:1/-1"><h3>Primera vez: actívala (mejor desde el ordenador)</h3><ol class="steps small">' +
+        '<li><b>Crea un repositorio privado</b> en <a href="https://github.com/new" target="_blank" rel="noopener">github.com/new</a>: ponle un nombre (por ejemplo <code>enlacecarmen-datos</code>), marca <b>Private</b> y también <b>Add a README file</b>.</li>' +
+        '<li><b>Crea un token</b> en <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub → Fine-grained tokens</a>:<ul><li><b>Expiration</b>: la más larga que te deje (cuando caduque, la app te avisará).</li><li><b>Repository access</b>: <i>Only select repositories</i> → el repositorio de datos.</li><li><b>Permissions → Repository permissions → Contents</b>: <i>Read and write</i>.</li></ul>Pulsa <b>Generate token</b> y cópialo (empieza por <code>github_pat_</code>).</li>' +
+        '<li><b>Conecta</b> con el botón de abajo: pega el token y elige la contraseña de la sincronización.</li></ol>' +
+        '<div class="row"><button type="button" class="btn cta" data-act="syncSetup">' + ic('shield', 's') + ' Conectar con GitHub</button></div>' +
+        '<p class="tiny muted">El token solo da acceso a ese repositorio y se guarda cifrado en cada dispositivo. La contraseña no se guarda en ningún sitio.</p></section></div>';
+  }
+  function statusHTML() {
+    const c = st.cfg, s = status() || ['', ''], q = UI.syncQR;
+    const errBox = st.err && !st.err.soft ? '<div class="banner err" style="margin:0">' + ic('shield') + '<div><b>' + esc(T(st.err.code)[0]) + '</b> ' + esc(T(st.err.code)[1]) + '<div class="row" style="margin-top:8px">' + fixButtons(st.err.code) + '</div></div></div>' : '';
+    const can = st.on && !!st.key;
+    return '<div class="grid g2 sync-tab">' +
+      '<section class="card stack"><h3>Sincronización activada</h3>' + errBox +
+        '<div class="status big ' + s[0] + '"><i></i><span>' + esc(s[1]) + '</span></div>' +
+        '<p class="small">Con el repositorio privado <a href="https://github.com/' + esc(c.repo) + '" target="_blank" rel="noopener"><b>' + esc(c.repo) + '</b></a> · ' + esc(st.last ? 'última vez ' + agoTxt(st.last) : 'todavía sin sincronizar') + '.</p>' +
+        '<p class="tiny muted">Este dispositivo (' + esc(String(c.dev || DEV).replace(/^(el|la) /, '')) + ') está vinculado desde el ' + esc(fDY(ymd(new Date(c.since || Date.now())))) + '. Los cambios se suben unos segundos después de hacerlos y se bajan al abrir la app y cada minuto mientras la tienes abierta.</p>' +
+        '<div class="row"><button type="button" class="btn" data-act="syncNow"' + (st.busy || !can ? ' disabled' : '') + '>' + ic('refresh', 's') + ' Sincronizar ahora</button></div></section>' +
+      '<section class="card stack"><h3>Vincular otro dispositivo</h3><p class="small">En el móvil, escanea este código con la cámara (o, dentro de la app instalada, <b>Ajustes → Sincronizar → Escanear el código QR</b>) y escribe la misma contraseña.</p>' +
+        (q && q.svg ? '<div class="qr">' + q.svg + '</div>' : '<div class="row"><button type="button" class="btn" data-act="syncQR"' + (can ? '' : ' disabled') + '>' + ic('phone', 's') + ' Mostrar el código QR</button></div>') +
+        '<div class="row"><button type="button" class="btn sm line" data-act="syncCopy"' + (can ? '' : ' disabled') + '>' + ic('copy', 's') + ' Copiar enlace</button>' + (navigator.share ? '<button type="button" class="btn sm line" data-act="syncShare"' + (can ? '' : ' disabled') + '>' + ic('ext', 's') + ' Compartir…</button>' : '') + '</div>' +
+        '<p class="tiny muted">El código lleva el token cifrado con tu contraseña: sin ella no sirve de nada. Aun así, compártelo solo contigo.</p></section>' +
+      '<section class="card stack"><h3>Este dispositivo</h3><div class="row"><button type="button" class="btn sm line" data-act="syncToken">Cambiar el token</button><button type="button" class="btn sm danger" data-act="syncOff">Desconectar</button></div><p class="tiny muted">Desconectar deja de sincronizar aquí. No borra nada de GitHub ni de tus otros dispositivos.</p></section>' +
+      '</div>';
+  }
+  function viewHTML() {
+    if (BUILD !== 'web') return '';
+    if (Store.mode === 'memory') return '<section class="card stack"><h3>Sincronizar</h3><p class="small">Este navegador no deja guardar datos (¿modo privado?), así que aquí no se puede activar la sincronización.</p></section>';
+    if (!hasCrypto()) return '<section class="card stack"><h3>Sincronizar</h3><p class="small">Para sincronizar, abre la app desde su dirección web (https://…), no como archivo.</p></section>';
+    return st.cfg ? statusHTML() : setupHTML();
+  }
+
+  /* ---------- diálogos ---------- */
+  const USER_FIELD = '<input type="text" name="username" autocomplete="username" value="Estudio de Carmen" class="sr-only" tabindex="-1" aria-hidden="true" readonly>';
+  function formDlg({title, body, submit, cta, onSubmit, foot = '', after}) {
+    const d = openDlg({title, body: '<form class="fgrid" novalidate>' + body + '<p class="full small err-t" role="alert" hidden></p><button type="submit" hidden></button></form>',
+      foot: foot + '<span class="sp"></span><button type="button" class="btn ghost" data-cancel>Cancelar</button><button type="button" class="btn' + (cta ? ' cta' : '') + '" data-ok>' + esc(submit) + '</button>'});
+    const form = d.el.querySelector('form'), okb = d.el.querySelector('[data-ok]'), et = d.el.querySelector('.err-t');
+    const setErr = m => { et.hidden = !m; et.textContent = m || ''; };
+    let busy = false;
+    const send = async () => {
+      if (busy) return; busy = true; setErr(''); okb.disabled = true; const lab = okb.textContent; okb.textContent = 'Un momento…';
+      try { const r = await onSubmit(form, {setErr, d}); if (r !== false) d.close(); }
+      catch (e) { if (!e || !e.code) console.error(e); setErr(errText(e)); if (after) after(e, form, d); }
+      finally { busy = false; okb.disabled = false; okb.textContent = lab; }
+    };
+    okb.onclick = send; form.addEventListener('submit', e => { e.preventDefault(); send(); });
+    d.el.querySelector('[data-cancel]').onclick = () => d.close();
+    return d;
+  }
+  function setupDlg() {
+    let last = null;
+    const d = formDlg({title: 'Conectar con GitHub', cta: true, submit: 'Conectar',
+      foot: '<button type="button" class="btn danger" data-replace hidden>Empezar de cero con esta contraseña</button>',
+      body: '<p class="full small">Usa el repositorio privado y el token de los pasos 1 y 2.</p>' +
+        '<div class="field full"><label for="sy-repo">Repositorio</label><input class="inp" id="sy-repo" name="repo" placeholder="usuario/enlacecarmen-datos" autocomplete="off" autocapitalize="off" spellcheck="false"><span class="help">Como <b>usuario/nombre</b>, o pega su dirección de GitHub.</span></div>' +
+        '<div class="field full"><label for="sy-tok">Token</label><input class="inp" id="sy-tok" name="tok" placeholder="github_pat_…" autocomplete="off" autocapitalize="off" spellcheck="false" data-1p-ignore data-lpignore="true"></div>' + USER_FIELD +
+        '<div class="field"><label for="sy-p1">Contraseña de la sincronización</label><input class="inp" id="sy-p1" name="p1" type="password" autocomplete="new-password"></div>' +
+        '<div class="field"><label for="sy-p2">Repítela</label><input class="inp" id="sy-p2" name="p2" type="password" autocomplete="new-password"></div>' +
+        '<p class="full tiny muted">Mínimo 8 caracteres (mejor una frase). Apúntala en un sitio seguro: sin ella no se pueden abrir los datos de GitHub, aunque los de tus dispositivos no se pierden. Si el repositorio ya tiene datos de otro dispositivo, escribe la contraseña que usaste allí.</p>',
+      onSubmit: async f => {
+        const v = {repo: f.elements.repo.value, token: f.elements.tok.value, pass: f.elements.p1.value, p2: f.elements.p2.value};
+        if (!normRepo(v.repo)) throw err('badrepo');
+        if (!TOKEN_RE.test(v.token.trim())) throw err('badtoken');
+        if (v.pass.length < 8) throw err('shortpass');
+        if (v.p2 && v.p2 !== v.pass) throw err('mismatch');
+        last = v;
+        await connect({repo: v.repo, token: v.token, pass: v.pass, confirmed: v.p2 === v.pass});
+        toast('¡Sincronización activada!'); renderAll();
+      },
+      after: (e, f, dd) => { const b = dd.el.querySelector('[data-replace]'); if (b) b.hidden = e.code !== 'badpass'; }});
+    d.el.querySelector('[data-replace]').onclick = async () => {
+      if (!last) return;
+      if (!await ask('Se sustituirá lo que hay en GitHub por los datos de este dispositivo, cifrados con esta contraseña. Tus otros dispositivos tendrán que volver a vincularse (lo que tengan guardado no se pierde: se juntará al vincularlos). ¿Seguir?', {ok: 'Sustituir', danger: true, title: 'Empezar de cero'})) return;
+      try { await connect({repo: last.repo, token: last.token, pass: last.pass, replace: true}); d.close(); toast('¡Sincronización activada con la contraseña nueva!'); renderAll(); }
+      catch (e) { const et = d.el.querySelector('.err-t'); et.hidden = false; et.textContent = errText(e); }
+    };
+  }
+  function linkDlg(p) {
+    formDlg({title: 'Vincular este dispositivo', submit: 'Vincular',
+      body: '<p class="full small">Escribe la contraseña de la sincronización (la que se eligió al activarla). Lo que ya tengas en este dispositivo se juntará con lo de allí.</p>' + USER_FIELD +
+        '<div class="field full"><label for="sy-lp">Contraseña</label><input class="inp" id="sy-lp" name="p" type="password" autocomplete="current-password" autofocus></div>',
+      onSubmit: async f => {
+        const pass = f.elements.p.value; if (!pass) throw err('nopass');
+        if (!hasCrypto()) throw err('nocrypto');
+        const key = await derive(pass, p.salt, ITER);
+        let info; try { info = JSON.parse(td.decode(await unseal(key, p.iv, p.ct, AAD_LINK))); } catch (e) { throw err('badpass'); }
+        if (!info || !info.r || !info.t) throw err('badlink');
+        await connect({repo: info.r, token: info.t, pass, linkSalt: p.salt, linkKey: key});
+        toast('¡Listo! Este dispositivo ya está sincronizado con ' + info.r + '.'); UI.ajTab = 'sync'; renderAll();
+      }});
+  }
+  function pasteDlg() {
+    formDlg({title: 'Pegar el enlace de vinculación', submit: 'Seguir',
+      body: '<div class="field full"><label for="sy-pl">Enlace</label><textarea class="inp" id="sy-pl" name="l" rows="4" placeholder="https://…#vincular=…" autocapitalize="off" spellcheck="false"></textarea><span class="help">En el otro dispositivo: Ajustes → Sincronizar → «Copiar enlace». Mándatelo a ti (por ejemplo, por WhatsApp o por correo) y pégalo aquí.</span></div>',
+      onSubmit: async f => { const p = parseLink(f.elements.l.value); if (!p) throw err('badlink'); setTimeout(() => linkDlg(p), 60); }});
+  }
+  function passDlg(title, intro, fn, submit = 'Seguir') {
+    formDlg({title, submit, body: '<p class="full small">' + intro + '</p>' + USER_FIELD + '<div class="field full"><label for="sy-up">Contraseña</label><input class="inp" id="sy-up" name="p" type="password" autocomplete="current-password" autofocus></div>',
+      onSubmit: async f => { const pass = f.elements.p.value; if (!pass) throw err('nopass'); await fn(pass); renderAll(); }});
+  }
+  async function scanDlg() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { toast('Este navegador no deja usar la cámara aquí. Usa «Pegar el enlace».'); return; }
+    let stream = null, alive = true;
+    const stop = () => { alive = false; if (stream) stream.getTracks().forEach(t => { try { t.stop(); } catch (e) {} }); };
+    const d = openDlg({title: 'Escanear el código QR', body: '<div class="scan"><video playsinline muted autoplay></video><i aria-hidden="true"></i></div><p class="small muted" id="scan-msg">Apunta al código que se ve en el otro dispositivo (Ajustes → Sincronizar → Vincular otro dispositivo).</p>', onClose: stop});
+    try { stream = await navigator.mediaDevices.getUserMedia({video: {facingMode: {ideal: 'environment'}}, audio: false}); }
+    catch (e) { d.close(); toast(e && e.name === 'NotAllowedError' ? 'Sin permiso para usar la cámara. Puedes usar «Pegar el enlace».' : 'No se ha podido abrir la cámara. Puedes usar «Pegar el enlace».'); return; }
+    if (!alive) { stop(); return; }
+    const v = d.el.querySelector('video'); v.srcObject = stream; try { await v.play(); } catch (e) {}
+    let det = null;
+    try { if ('BarcodeDetector' in window) { const f = await window.BarcodeDetector.getSupportedFormats(); if (f.includes('qr_code')) det = new window.BarcodeDetector({formats: ['qr_code']}); } } catch (e) { det = null; }
+    if (!det && !await loadLib('jsqr')) { d.close(); toast('No se ha podido cargar el lector de códigos. Usa «Pegar el enlace».'); return; }
+    const cv = document.createElement('canvas'), cx = cv.getContext('2d', {willReadFrequently: true}), msg = d.el.querySelector('#scan-msg');
+    const tick = async () => {
+      if (!alive) return;
+      let txt = null;
+      try {
+        if (v.readyState >= 2 && v.videoWidth) {
+          if (det) { const r = await det.detect(v); if (r && r[0]) txt = r[0].rawValue; }
+          else { const w = Math.min(720, v.videoWidth), h = Math.round(v.videoHeight * w / v.videoWidth); cv.width = w; cv.height = h; cx.drawImage(v, 0, 0, w, h); const r = window.jsQR(cx.getImageData(0, 0, w, h).data, w, h, {inversionAttempts: 'dontInvert'}); if (r) txt = r.data; }
+        }
+      } catch (e) {}
+      if (!alive) return;
+      if (txt) { const p = parseLink(txt); if (p) { stop(); d.close(); linkDlg(p); return; } msg.textContent = 'Ese código no es de vinculación del Estudio de Carmen.'; }
+      setTimeout(tick, 220);
+    };
+    tick();
+  }
+  async function linkNow() { if (!UI.syncLink) UI.syncLink = await makeLink(); return UI.syncLink; }
+
+  /* ---------- acciones ---------- */
+  ACT.syncOpen = () => { UI.ajTab = 'sync'; go('ajustes'); };
+  ACT.syncHint = () => { LS.set(K.hint, true); renderChrome(); };
+  ACT.syncReload = () => location.reload();
+  ACT.syncSetup = () => setupDlg();
+  ACT.syncScan = () => scanDlg();
+  ACT.syncPaste = () => pasteDlg();
+  ACT.syncNow = async () => { if (!st.on) { if (st.err && st.err.code === 'locked') ACT.syncUnlock(); return; } st.err = null; const ok = await run({full: true}); toast(ok ? 'Sincronizado' : errText(st.err && {code: st.err.code})); };
+  ACT.syncQR = async () => { try { const link = await linkNow(); const svg = await qrSVG(link); if (!svg) { toast('No se ha podido dibujar el código. Usa «Copiar enlace».'); return; } UI.syncQR = {svg}; renderAll(); } catch (e) { toast('No se ha podido crear el código'); } };
+  ACT.syncCopy = async () => { try { copyText(await linkNow(), 'Enlace de vinculación'); } catch (e) { toast('No se ha podido crear el enlace'); } };
+  ACT.syncShare = async () => { try { await navigator.share({title: 'Vincular el Estudio de Carmen', text: 'Abre este enlace en tu otro dispositivo para vincularlo (te pedirá la contraseña).', url: await linkNow()}); } catch (e) {} };
+  ACT.syncToken = () => {
+    if (!st.key) { ACT.syncUnlock(); return; }
+    formDlg({title: 'Cambiar el token', submit: 'Guardar',
+      body: '<p class="full small">Crea un token nuevo en <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub → Fine-grained tokens</a> con acceso solo a <b>' + esc(st.cfg.repo) + '</b> y <b>Contents: Read and write</b>, y pégalo aquí.</p><div class="field full"><label for="sy-nt">Token nuevo</label><input class="inp" id="sy-nt" name="tok" placeholder="github_pat_…" autocomplete="off" autocapitalize="off" spellcheck="false" data-1p-ignore data-lpignore="true"></div><p class="full tiny muted">En tus otros dispositivos también tendrás que cambiarlo (o volver a vincularlos con el código QR).</p>',
+      onSubmit: async f => { await setToken(f.elements.tok.value); UI.syncLink = null; UI.syncQR = null; toast('Token actualizado'); renderAll(); }});
+  };
+  ACT.syncUnlock = () => passDlg('Escribe tu contraseña', 'Este dispositivo necesita otra vez la contraseña de la sincronización para seguir poniéndose al día.', async pass => { await unlock(pass); toast('Sincronización reanudada'); });
+  ACT.syncRepass = () => {
+    if (!st.token) { ACT.syncScan(); return; }
+    passDlg('Contraseña nueva', 'Escribe la contraseña que se usa ahora en tus otros dispositivos. Lo que tengas aquí se juntará con lo de GitHub.', async pass => { await connect({repo: st.cfg.repo, token: st.token, pass}); UI.syncLink = null; toast('Sincronización reanudada'); }, 'Vincular');
+  };
+  ACT.syncReplace = async () => {
+    if (!await ask('Se sustituirá el archivo de GitHub por los datos de este dispositivo (con tu contraseña de siempre). Si otro dispositivo tiene cosas que aquí no están, se juntarán cuando vuelva a sincronizar. ¿Seguir?', {ok: 'Sustituir', danger: true, title: 'Sustituir lo de GitHub'})) return;
+    st.err = null; const ok = await run({full: true, replace: true}); toast(ok ? 'Datos de GitHub sustituidos' : errText(st.err));
+  };
+  ACT.syncOff = () => {
+    const d = openDlg({title: 'Desconectar este dispositivo', body: '<p>Este dispositivo dejará de sincronizarse. No se borra nada de GitHub ni de tus otros dispositivos.</p><label class="row-nw small"><input type="checkbox" class="check" id="sy-wipe"> Borrar también los datos guardados en este dispositivo (por ejemplo, si no es tuyo)</label>', foot: '<span class="sp"></span><button type="button" class="btn ghost" data-no>Cancelar</button><button type="button" class="btn danger" data-yes>Desconectar</button>'});
+    d.el.querySelector('[data-no]').onclick = () => d.close();
+    d.el.querySelector('[data-yes]').onclick = async () => {
+      const wipe = d.el.querySelector('#sy-wipe').checked; d.close();
+      if (wipe && st.on && st.dirty && !await run() && !await ask('Hay cambios de este dispositivo que todavía no se han subido y se perderían. ¿Borrar igualmente?', {ok: 'Borrar', danger: true})) return;
+      await disconnect(wipe); toast(wipe ? 'Desconectado; los datos de este dispositivo se han borrado' : 'Este dispositivo ya no se sincroniza'); renderAll();
+    };
+  };
+
+  /* ---------- arranque ---------- */
+  function init() {
+    if (BUILD !== 'web') return;
+    window.addEventListener('online', () => { miss.clear(); if (st.err && st.err.soft) st.retryAt = 0; kick(0); });
+    document.addEventListener('visibilitychange', () => { if (!st.on) return; if (document.hidden) { if (st.dirty) run(); } else kick(st.dirty ? 0 : 600); });
+    window.addEventListener('pagehide', () => { if (st.on && st.dirty) run(); });
+    setInterval(() => { if (st.on && !document.hidden && !st.busy) kick(0); }, 60000);
+    window.addEventListener('storage', e => { if (e.key === K.cfg) reload(); });
+    const fromHash = () => {
+      if (!(location.hash || '').startsWith('#vincular=')) return false;
+      const p = parseLink(location.hash);
+      try { history.replaceState(null, '', location.pathname + location.search + '#ajustes'); } catch (e) {}
+      UI.view = 'ajustes'; UI.ajTab = 'sync';
+      setTimeout(() => { renderAll(); if (p) linkDlg(p); else toast(errText({code: 'badlink'})); }, 120);
+      return true;
+    };
+    window.addEventListener('hashchange', fromHash);   // si la app ya estaba abierta en esta pestaña
+    fromHash();
+    reload();
+  }
+
+  return {init, noteWrite, changed, fetchFile, status, banner, viewHTML, run, parseLink,
+    active: () => BUILD === 'web' && !!st.cfg, clearQR: () => { UI.syncQR = null; UI.syncLink = null; }, _st: st};
+})();
+
 /* ===================== arranque ===================== */
 (function boot() {
   const [v, a] = parseHash(); UI.view = v; UI.arg = a;
   applyTheme();
   renderAll();
-  if (BUILD === 'web') { initLocal(); applyLook(); renderAll(); setTimeout(dailyNotify, 1500); }
+  if (BUILD === 'web') { initLocal(); Sync.init(); applyLook(); renderAll(); setTimeout(dailyNotify, 1500); }
   else initArtifact().then(() => { applyColors(true); renderAll(); });
   setInterval(() => {
     const ae = document.activeElement;

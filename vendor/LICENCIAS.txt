@@ -1,0 +1,9 @@
+Bibliotecas incluidas en esta carpeta
+=====================================
+jspdf 2.5.1 (MIT) · https://github.com/parallax/jsPDF
+jspdf-autotable 3.8.2 (MIT) · https://github.com/simonbengtsson/jsPDF-AutoTable
+JSZip 3.10.1 (MIT o GPLv3) · https://github.com/Stuk/jszip
+qrcode-generator 1.4.4 (MIT) · Copyright (c) 2009 Kazuhiko Arase · https://github.com/kazuhikoarase/qrcode-generator
+jsQR 1.4.0 (Apache License 2.0) · Copyright Cosmo Wolfe · https://github.com/cozmo/jsQR · texto de la licencia: https://www.apache.org/licenses/LICENSE-2.0
+fflate 0.8.2 (MIT) · Copyright (c) 2023 Arjun Barrett · https://github.com/101arrowz/fflate
+Fuentes: Manrope y Playfair Display (SIL Open Font License 1.1) vía Fontsource.
